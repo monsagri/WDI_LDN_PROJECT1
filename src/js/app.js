@@ -4,8 +4,9 @@ console.log('JS locked and loaded');
 // Declare global functions
 
 let $board = null;
-let $newgame = null;
-let $playerdiv = null;
+let $newGame = null;
+let $playerDiv = null;
+let playerLocation = null;
 let boardSize = 0;
 
 //Check for DOM loaded
@@ -21,12 +22,12 @@ function init(){
   console.log('DOM loaded');
   // grab DOM-related variables
   $board = $('.gameboard');
-  $playerdiv = $('.player');
-  $newgame = $('#newgame');
+  $playerDiv = $('.player');
+  $newGame = $('#newgame');
   // run Functions
   createMap(5);
   // add Event listeners
-  $newgame.on('click', newGame);
+  $newGame.on('click', newGame);
 }
 
 // Declare DOM-related Functions
@@ -41,4 +42,20 @@ function newGame() {
   const startingLocation = Math.floor((Math.random() * boardSize));
   $('div').removeClass('player');
   $(`[data-location="${startingLocation}"]`).toggleClass('player');
+  $playerDiv = $('.player');
+  playerLocation = $playerDiv.data('location');
+  console.log(playerLocation);
+}
+
+function moveUp() {
+
+}
+function moveDown() {
+
+}
+function moveLeft() {
+
+}
+function moveRight() {
+
 }
