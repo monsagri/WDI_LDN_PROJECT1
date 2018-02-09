@@ -12,13 +12,12 @@ let boardLength = 0;
 
 //Check for DOM loaded
 $(function() {
-
-
   // run DOM related functions
   init();
 });
-
-
+function activateMovement() {
+  $('body').keydown(move);
+}
 function init(){
   console.log('DOM loaded');
   // grab DOM-related variables
@@ -26,7 +25,7 @@ function init(){
   $playerDiv = $('.player');
   $newGame = $('#newgame');
   // run Functions
-  createMap(5);
+  createMap(6);
   // add Event listeners
   $newGame.on('click', newGame);
 }
@@ -34,6 +33,9 @@ function init(){
 // Declare DOM-related Functions
 
 function createMap(size) {
+  // while ($('.gameboard:first-child')) {
+  //   $board.remove($('.gameboard:first-child'));
+  // }
   boardSize = size * size;
   boardLength = size;
   for (let i = 0; i < size*size; i++){
@@ -52,17 +54,18 @@ function newGame() {
   console.log(playerLocation);
 
   // Toggle Event Listeners for movement
-  $('body').keydown(move);
+  activateMovement();
 }
 
 function move(e) {
   console.log(e.keyCode);
   const key = e.keyCode;
+  $('body').off('keydown');
+  setTimeout(activateMovement, 100);
   if (key === 87) moveUp();
   if (key === 83) moveDown();
   if (key === 65) moveLeft();
   if (key === 68) moveRight();
-
 }
 function moveUp() {
   if ((playerLocation -= boardLength) < 0) {
