@@ -3,10 +3,30 @@
   <head>
     <meta charset="utf-8">
     <title>WDI Project 1: JavaScript Game</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="/js/app.js" charset="utf-8"></script>
+    <!-- <link rel="stylesheet" href="/css/normalize.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
     <link rel="stylesheet" href="/css/style.css">
   </head>
   <body>
-    <h1>WDI Project 1: JavaScript Game</h1>
+    <header>
+      <h1>Roguelike</h1>
+    </header>
+    <main>
+      <div class="container">
+        <div class="options">
+          <button type="button" name="button">New Game</button>
+          <button type="button" name="button">Save</button>
+          <button type="button" name="button">Music</button>
+          <button type="button" name="button">Hints</button>
+        </div>
+        <div class="score">
+          It took you <span>X</span> moves to find the exit!
+        </div>
+        <div class="container gameboard">
+        </div>
+      </div>
+    </main>
   </body>
 </html>
