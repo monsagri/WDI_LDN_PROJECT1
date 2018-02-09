@@ -36,6 +36,9 @@ body {
       height: 70vh;
       display: flex;
       flex-wrap: wrap;
+      .player {
+        background-color: red;
+      }
     }
   }
   footer {
