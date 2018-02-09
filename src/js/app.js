@@ -65,30 +65,46 @@ function move(e) {
 
 }
 function moveUp() {
-  console.log('moving up');
-  $playerDiv.removeClass('player');
-  $(`[data-location="${playerLocation - boardLength}"]`).toggleClass('player');
-  playerLocation -= boardLength;
-  $playerDiv = $('.player');
+  if ((playerLocation -= boardLength) < 0) {
+    console.log('You can\'t leave.');
+  } else {
+    console.log('moving up');
+    $playerDiv.removeClass('player');
+    $(`[data-location="${playerLocation - boardLength}"]`).toggleClass('player');
+    playerLocation -= boardLength;
+    $playerDiv = $('.player');
+  }
 }
 function moveDown() {
-  console.log('moving down');
-  $playerDiv.removeClass('player');
-  $(`[data-location="${playerLocation + boardLength}"]`).toggleClass('player');
-  playerLocation += boardLength;
-  $playerDiv = $('.player');
+  if ((playerLocation += boardLength) > boardSize) {
+    console.log('You can\'t leave.');
+  } else {
+    console.log('moving down');
+    $playerDiv.removeClass('player');
+    $(`[data-location="${playerLocation + boardLength}"]`).toggleClass('player');
+    playerLocation += boardLength;
+    $playerDiv = $('.player');
+  }
 }
 function moveLeft() {
-  console.log('moving left');
-  $playerDiv.removeClass('player');
-  $(`[data-location="${playerLocation - 1}"]`).toggleClass('player');
-  playerLocation -= 1;
-  $playerDiv = $('.player');
+  if ((playerLocation === 0||playerLocation % boardLength === 0 )) {
+    console.log('You can\'t leave.');
+  } else {
+    console.log('moving left');
+    $playerDiv.removeClass('player');
+    $(`[data-location="${playerLocation - 1}"]`).toggleClass('player');
+    playerLocation -= 1;
+    $playerDiv = $('.player');
+  }
 }
 function moveRight() {
-  console.log('moving right');
-  $playerDiv.removeClass('player');
-  $(`[data-location="${playerLocation + 1}"]`).toggleClass('player');
-  playerLocation += 1;
-  $playerDiv = $('.player');
+  if ((playerLocation % boardLength === boardLength - 1)) {
+    console.log('You can\'t leave.');
+  } else {
+    console.log('moving right');
+    $playerDiv.removeClass('player');
+    $(`[data-location="${playerLocation + 1}"]`).toggleClass('player');
+    playerLocation += 1;
+    $playerDiv = $('.player');
+  }
 }
