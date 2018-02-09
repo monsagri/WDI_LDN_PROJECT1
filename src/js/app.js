@@ -68,18 +68,25 @@ function move(e) {
   if (key === 68) moveRight();
 }
 function moveUp() {
-  if ((playerLocation -= boardLength) < 0) {
+  if ((playerLocation - boardLength) < 0) {
     console.log('You can\'t leave.');
   } else {
     console.log('moving up');
     $playerDiv.removeClass('player');
-    $(`[data-location="${playerLocation - boardLength}"]`).toggleClass('player');
+    console.log('current location is' + playerLocation);
+    console.log('removing' + boardLength);
+
     playerLocation -= boardLength;
+
+    console.log('current location is' + playerLocation);
+    $(`[data-location="${playerLocation}"]`).addClass('player');
+
+
     $playerDiv = $('.player');
   }
 }
 function moveDown() {
-  if ((playerLocation += boardLength) > boardSize) {
+  if ((playerLocation + boardLength) > boardSize) {
     console.log('You can\'t leave.');
   } else {
     console.log('moving down');
