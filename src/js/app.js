@@ -6,6 +6,8 @@ console.log('JS locked and loaded');
 let $board = null;
 let $newGame = null;
 let $playerDiv = null;
+let startingLocation = 0;
+let treasureLocation = 0;
 let playerLocation = null;
 let boardSize = 0;
 let boardLength = 0;
@@ -17,6 +19,9 @@ $(function() {
 });
 function activateMovement() {
   $('body').keydown(move);
+}
+function deactivateMovement() {
+  $('body').off('keydown');
 }
 function init(){
   console.log('DOM loaded');
@@ -39,15 +44,20 @@ function createMap(size) {
   boardSize = size * size;
   boardLength = size;
   for (let i = 0; i < size*size; i++){
-    $board.append($(`<div style="width: ${(100 / size )}%; height: ${(100 / size )}%; border: 1px solid black;" data-location="${i}";></div>`));
+    $board.append($(`<div class="area" style="width: ${(100 / size )}%; height: ${(100 / size )}%; border: 1px solid black; background-image: url(/images/floor.png);" data-location="${i}";></div>`));
   }
 }
 function newGame() {
-  const startingLocation = Math.floor((Math.random() * boardSize));
+  deactivateMovement();
+  $('.area').html('');
+  startingLocation = Math.floor((Math.random() * boardSize));
+  treasureLocation = Math.floor((Math.random() * boardSize));
   // Clear board of old player sprite
   $('div').removeClass('player');
   // Set New Player location Div
   $(`[data-location="${startingLocation}"]`).toggleClass('player');
+  $(`[data-location="${startingLocation}"]`).html('<img src="/images/knight.png">');
+  $(`[data-location="${treasureLocation}"]`).html('<img src="/images/treasure.svg">');
   $playerDiv = $('.player');
   // Save Player Location to avoid DOM reference
   playerLocation = $playerDiv.data('location');
@@ -60,39 +70,37 @@ function newGame() {
 function move(e) {
   console.log(e.keyCode);
   const key = e.keyCode;
-  $('body').off('keydown');
+  deactivateMovement();
   setTimeout(activateMovement, 100);
   if (key === 87) moveUp();
   if (key === 83) moveDown();
   if (key === 65) moveLeft();
   if (key === 68) moveRight();
+  checkForWin();
 }
 function moveUp() {
   if ((playerLocation - boardLength) < 0) {
     console.log('You can\'t leave.');
   } else {
     console.log('moving up');
-    $playerDiv.removeClass('player');
-    console.log('current location is' + playerLocation);
-    console.log('removing' + boardLength);
-
+    // $playerDiv.removeClass('player');
+    // $(`[data-location="${playerLocation}"]`).addClass('player');
+    $(`[data-location="${playerLocation}"]`).html('');
     playerLocation -= boardLength;
-
-    console.log('current location is' + playerLocation);
-    $(`[data-location="${playerLocation}"]`).addClass('player');
-
-
+    $(`[data-location="${playerLocation}"]`).html('<img src="/images/knight.png">');
     $playerDiv = $('.player');
   }
 }
 function moveDown() {
-  if ((playerLocation + boardLength) > boardSize) {
+  if (playerLocation === (boardSize - boardLength)||(playerLocation + boardLength) > boardSize) {
     console.log('You can\'t leave.');
   } else {
     console.log('moving down');
-    $playerDiv.removeClass('player');
-    $(`[data-location="${playerLocation + boardLength}"]`).toggleClass('player');
+    // $playerDiv.removeClass('player');
+    // $(`[data-location="${playerLocation}"]`).toggleClass('player');
+    $(`[data-location="${playerLocation}"]`).html('');
     playerLocation += boardLength;
+    $(`[data-location="${playerLocation}"]`).html('<img src="/images/knight.png">');
     $playerDiv = $('.player');
   }
 }
@@ -101,9 +109,12 @@ function moveLeft() {
     console.log('You can\'t leave.');
   } else {
     console.log('moving left');
-    $playerDiv.removeClass('player');
-    $(`[data-location="${playerLocation - 1}"]`).toggleClass('player');
+    // $playerDiv.removeClass('player');
+    // $(`[data-location="${playerLocation}"]`).toggleClass('player');
+    $(`[data-location="${playerLocation}"]`).html('');
     playerLocation -= 1;
+    $(`[data-location="${playerLocation}"]`).html('<img src="/images/knight.png">');
+
     $playerDiv = $('.player');
   }
 }
@@ -112,9 +123,17 @@ function moveRight() {
     console.log('You can\'t leave.');
   } else {
     console.log('moving right');
-    $playerDiv.removeClass('player');
-    $(`[data-location="${playerLocation + 1}"]`).toggleClass('player');
+    // $playerDiv.removeClass('player');
+    // $(`[data-location="${playerLocation}"]`).toggleClass('player');
+    $(`[data-location="${playerLocation}"]`).html('');
     playerLocation += 1;
+    $(`[data-location="${playerLocation}"]`).html('<img src="/images/knight.png">');
     $playerDiv = $('.player');
+  }
+}
+function checkForWin() {
+  if (playerLocation === treasureLocation) {
+    window.alert('YOU WIN!!!');
+    setTimeout(deactivateMovement, 200);
   }
 }
