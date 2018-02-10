@@ -11,6 +11,8 @@ let treasureLocation = 0;
 let playerLocation = null;
 let boardSize = 0;
 let boardLength = 0;
+const walls = [2,4,9,11,12,14,18,24,27,32,33,37,38,46,47,52,59,60,62,63,64,66,72,76,79,84,86,91,92,94];
+
 
 //Check for DOM loaded
 $(function() {
@@ -30,7 +32,7 @@ function init(){
   $playerDiv = $('.player');
   $newGame = $('#newgame');
   // run Functions
-  createMap(6);
+  createMap(10);
   // add Event listeners
   $newGame.on('click', newGame);
 }
@@ -44,14 +46,24 @@ function createMap(size) {
   boardSize = size * size;
   boardLength = size;
   for (let i = 0; i < size*size; i++){
-    $board.append($(`<div class="area" style="width: ${(100 / size )}%; height: ${(100 / size )}%; border: 1px solid black; background-image: url(/images/floor.png);" data-location="${i}";></div>`));
+    $board.append($(`<div class="floor" style="width: ${(100 / size )}%; height: ${(100 / size )}%; border: 1px solid black;" data-location="${i}";></div>`));
   }
+  addWalls();
+}
+function addWalls() {
+  walls.forEach((location) => {
+    console.log('setting wall for ' + location);
+    $(`[data-location="${location}"]`).removeClass('floor');
+    $(`[data-location="${location}"]`).addClass('wall');
+  } );
 }
 function newGame() {
   deactivateMovement();
   $('.area').html('');
   startingLocation = Math.floor((Math.random() * boardSize));
   treasureLocation = Math.floor((Math.random() * boardSize));
+  console.log('Starting Location is ' + startingLocation);
+  console.log('Treasure Location is ' + treasureLocation);
   // Clear board of old player sprite
   $('div').removeClass('player');
   // Set New Player location Div

@@ -32,8 +32,8 @@ body {
     .gameboard {
       margin-top: 30px;
       background-color: #FFF;
-      width: 70vh;
-      height: 70vh;
+      width: 90vh;
+      height: 90vh;
       display: flex;
       flex-wrap: wrap;
       .player {
@@ -44,4 +44,12 @@ body {
   footer {
 
   }
+}
+
+.floor {
+  background-image: url('/images/floor.png');
+}
+
+.wall {
+  background-color: #000;
 }
