@@ -46,7 +46,7 @@ function createMap(size) {
   boardSize = size * size;
   boardLength = size;
   for (let i = 0; i < size*size; i++){
-    $board.append($(`<div class="floor" style="width: ${(100 / size )}%; height: ${(100 / size )}%; border: 1px solid black;" data-location="${i}";></div>`));
+    $board.append($(`<div class="floor" style="width: ${(100 / size )}%; height: ${(100 / size )}%;" data-location="${i}";></div>`));
   }
   addWalls();
 }
@@ -57,17 +57,30 @@ function addWalls() {
     $(`[data-location="${location}"]`).addClass('wall');
   } );
 }
+function getStartingLocation() {
+  startingLocation = Math.floor((Math.random() * boardSize));
+  while (walls.includes(startingLocation)) {
+    console.log('preventing spawning in a wall');
+    startingLocation = Math.floor((Math.random() * boardSize));
+  }
+}
+function getTreasureLocation() {
+  treasureLocation = Math.floor((Math.random() * boardSize));
+  while (walls.includes(treasureLocation)) {
+    console.log('preventing spawning in a wall');
+    treasureLocation = Math.floor((Math.random() * boardSize));
+  }
+}
 function newGame() {
   deactivateMovement();
-  $('.area').html('');
-  startingLocation = Math.floor((Math.random() * boardSize));
-  treasureLocation = Math.floor((Math.random() * boardSize));
-  console.log('Starting Location is ' + startingLocation);
-  console.log('Treasure Location is ' + treasureLocation);
-  // Clear board of old player sprite
+  // Clear board of old sprites
   $('div').removeClass('player');
+  $('.floor').html('');
+  // startingLocation = Math.floor((Math.random() * boardSize));
+  getStartingLocation();
+  getTreasureLocation();
   // Set New Player location Div
-  $(`[data-location="${startingLocation}"]`).toggleClass('player');
+  $(`[data-location="${startingLocation}"]`).addClass('player');
   $(`[data-location="${startingLocation}"]`).html('<img src="/images/knight.png">');
   $(`[data-location="${treasureLocation}"]`).html('<img src="/images/treasure.svg">');
   $playerDiv = $('.player');
@@ -91,8 +104,8 @@ function move(e) {
   checkForWin();
 }
 function moveUp() {
-  if ((playerLocation - boardLength) < 0) {
-    console.log('You can\'t leave.');
+  if ((playerLocation - boardLength) < 0 || walls.includes((playerLocation - boardLength)) ) {
+    console.log('That\'s a wall.');
   } else {
     console.log('moving up');
     // $playerDiv.removeClass('player');
@@ -104,8 +117,8 @@ function moveUp() {
   }
 }
 function moveDown() {
-  if (playerLocation === (boardSize - boardLength)||(playerLocation + boardLength) > boardSize) {
-    console.log('You can\'t leave.');
+  if (playerLocation === (boardSize - boardLength)||(playerLocation + boardLength) > boardSize || walls.includes((playerLocation + boardLength))) {
+    console.log('That\'s a wall.');
   } else {
     console.log('moving down');
     // $playerDiv.removeClass('player');
@@ -117,7 +130,7 @@ function moveDown() {
   }
 }
 function moveLeft() {
-  if ((playerLocation === 0||playerLocation % boardLength === 0 )) {
+  if ((playerLocation === 0 || playerLocation % boardLength === 0 || walls.includes((playerLocation - 1)))) {
     console.log('You can\'t leave.');
   } else {
     console.log('moving left');
@@ -131,8 +144,8 @@ function moveLeft() {
   }
 }
 function moveRight() {
-  if ((playerLocation % boardLength === boardLength - 1)) {
-    console.log('You can\'t leave.');
+  if ((playerLocation % boardLength === boardLength - 1) || walls.includes((playerLocation + 1))) {
+    console.log('That\'s a wall.');
   } else {
     console.log('moving right');
     // $playerDiv.removeClass('player');
