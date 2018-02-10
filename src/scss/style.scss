@@ -23,7 +23,13 @@ body {
         font-weight: 500;
       }
     }
-    .score {
+    .highscorecontainer {
+      margin-top: 15px;
+      padding: 10px;
+      color: red;
+      display: inline-block;
+    }
+    .scoremessage {
       margin-top: 20px;
       color: #FFF;
       font-size: 1rem;
@@ -60,4 +66,14 @@ body {
 .hidden {
   background: #000;
   opacity: 0;
+}
+
+.hide {
+  display: none;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-decoration: underline;
 }

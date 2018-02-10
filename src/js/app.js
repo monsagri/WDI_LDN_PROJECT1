@@ -6,6 +6,9 @@ console.log('JS locked and loaded');
 let $board = null;
 let $newGame = null;
 let $playerDiv = null;
+let $soundButton = null;
+let audio = null;
+
 let startingLocation = 0;
 let treasureLocation = 0;
 let playerLocation = null;
@@ -13,6 +16,7 @@ let boardSize = 0;
 let boardLength = 0;
 const walls = [2,4,9,11,12,14,18,24,27,32,33,37,38,46,47,52,59,60,62,63,64,66,72,76,79,84,86,91,92,94];
 let visibleSquares = [];
+let stepsTaken = 0;
 
 
 //Check for DOM loaded
@@ -32,10 +36,13 @@ function init(){
   $board = $('.gameboard');
   $playerDiv = $('.player');
   $newGame = $('#newgame');
+  $soundButton = $('#sound');
+  audio = document.querySelector('audio');
   // run Functions
   createMap(10);
   // add Event listeners
   $newGame.on('click', newGame);
+  $soundButton.on('click', toggleMusic);
 }
 
 // Declare DOM-related Functions
@@ -53,7 +60,6 @@ function createMap(size) {
 }
 function addWalls() {
   walls.forEach((location) => {
-    console.log('setting wall for ' + location);
     $(`[data-location="${location}"]`).removeClass('floor');
     $(`[data-location="${location}"]`).addClass('wall');
   } );
@@ -74,6 +80,7 @@ function getTreasureLocation() {
 }
 function newGame() {
   deactivateMovement();
+  $('#scoremessage').addClass('hide');
   // Clear board of old sprites
   $('div').removeClass('player');
   $('.floor').html('');
@@ -103,6 +110,7 @@ function move(e) {
   if (key === 65) moveLeft();
   if (key === 68) moveRight();
   changeVisibility();
+  stepsTaken ++;
   checkForWin();
 }
 function moveUp() {
@@ -184,7 +192,23 @@ function visionRight() {
 }
 function checkForWin() {
   if (playerLocation === treasureLocation) {
+    $('#scoremessage').removeClass('hide');
+    $('#score').html(stepsTaken);
+    checkForHighscore();
     window.alert('YOU WIN!!!');
     setTimeout(deactivateMovement, 200);
+  }
+}
+function checkForHighscore() {
+  if ($('#highscore').html() === '-' || stepsTaken < $('#highscore').html()) $('#highscore').html(stepsTaken);
+}
+function toggleMusic(e) {
+  e.preventDefault();
+  if (audio.paused === false) {
+    audio.pause();
+    console.log('music paused');
+  } else {
+    audio.play();
+    console.log('music playing');
   }
 }

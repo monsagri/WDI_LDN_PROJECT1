@@ -14,15 +14,22 @@
       <h1>Roguelike</h1>
     </header>
     <main>
+      <audio id="backgroundmusic" src="/sounds/quiet-tension.mp3" autoplay="autoplay" loop="loop"></audio>
       <div class="container">
         <div class="options">
           <button type="button" name="button" id="newgame">New Game</button>
           <button type="button" name="button">Save</button>
-          <button type="button" name="button" id="music">Music</button>
+          <button type="button" name="button" id="sound">Music</button>
           <button type="button" name="button">Hints</button>
         </div>
-        <div class="score">
-          It took you <span>X</span> moves to find the exit!
+        <div class="highscorecontainer" id="highscoredisplay">
+          <h2>Highscore</h2>
+          <div class="">
+            <span id="highscore">-</span>
+          </div>
+        </div>
+        <div class="scoremessage hide" id="scoremessage">
+          It took you <span id="score">X</span> moves to find the exit!
         </div>
         <div class="container gameboard">
         </div>
