@@ -67,7 +67,7 @@ function getStartingLocation() {
 }
 function getTreasureLocation() {
   treasureLocation = Math.floor((Math.random() * boardSize));
-  while (walls.includes(treasureLocation)) {
+  while (walls.includes(treasureLocation) || treasureLocation === playerLocation) {
     console.log('preventing spawning in a wall');
     treasureLocation = Math.floor((Math.random() * boardSize));
   }

@@ -1,3 +1,6 @@
+html {
+  background: #000;
+}
 body {
   background-color: #000;
   width: 100vw;
@@ -31,7 +34,7 @@ body {
     }
     .gameboard {
       margin-top: 30px;
-      background-color: #FFF;
+      background-color: #000;
       width: 90vh;
       height: 90vh;
       display: flex;
@@ -55,5 +58,6 @@ body {
 }
 
 .hidden {
+  background: #000;
   opacity: 0;
 }
