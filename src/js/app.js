@@ -12,6 +12,7 @@ let playerLocation = null;
 let boardSize = 0;
 let boardLength = 0;
 const walls = [2,4,9,11,12,14,18,24,27,32,33,37,38,46,47,52,59,60,62,63,64,66,72,76,79,84,86,91,92,94];
+let visibleSquares = [];
 
 
 //Check for DOM loaded
@@ -46,7 +47,7 @@ function createMap(size) {
   boardSize = size * size;
   boardLength = size;
   for (let i = 0; i < size*size; i++){
-    $board.append($(`<div class="floor hidden" style="width: ${(100 / size )}%; height: ${(100 / size )}%;" data-location="${i}";></div>`));
+    $board.append($(`<div class="floor hidden area" style="width: ${(100 / size )}%; height: ${(100 / size )}%;" data-location="${i}";></div>`));
   }
   addWalls();
 }
@@ -87,7 +88,7 @@ function newGame() {
   // Save Player Location to avoid DOM reference
   playerLocation = $playerDiv.data('location');
   console.log(playerLocation);
-
+  changeVisibility();
   // Toggle Event Listeners for movement
   activateMovement();
 }
@@ -101,6 +102,7 @@ function move(e) {
   if (key === 83) moveDown();
   if (key === 65) moveLeft();
   if (key === 68) moveRight();
+  changeVisibility();
   checkForWin();
 }
 function moveUp() {
@@ -155,6 +157,30 @@ function moveRight() {
     $(`[data-location="${playerLocation}"]`).html('<img src="/images/knight.png">');
     $playerDiv = $('.player');
   }
+}
+function changeVisibility() {
+  visibleSquares = [];
+  visibleSquares.push(playerLocation,visionTop(),visionBottom(),visionLeft(),visionRight());
+  $('.area').addClass('hidden');
+  visibleSquares.forEach((square) => {
+    $(`[data-location="${square}"]`).removeClass('hidden');
+  });
+}
+function visionTop() {
+  if ((playerLocation - boardLength) < 0) return ;
+  else return playerLocation-boardLength;
+}
+function visionBottom() {
+  if (playerLocation === (boardSize - boardLength)||(playerLocation + boardLength) > boardSize) return ;
+  else return playerLocation+boardLength;
+}
+function visionLeft() {
+  if ((playerLocation === 0 || playerLocation % boardLength === 0 )) return ;
+  else return playerLocation -1;
+}
+function visionRight() {
+  if (playerLocation % boardLength === boardLength - 1) return;
+  else return playerLocation + 1;
 }
 function checkForWin() {
   if (playerLocation === treasureLocation) {

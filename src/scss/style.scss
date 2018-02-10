@@ -51,5 +51,9 @@ body {
 }
 
 .wall {
-  background-color: #000;
+  background-image: url('/images/wall1.png');
+}
+
+.hidden {
+  opacity: 0;
 }
