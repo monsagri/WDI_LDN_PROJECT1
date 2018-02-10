@@ -46,7 +46,7 @@ function createMap(size) {
   boardSize = size * size;
   boardLength = size;
   for (let i = 0; i < size*size; i++){
-    $board.append($(`<div class="floor" style="width: ${(100 / size )}%; height: ${(100 / size )}%;" data-location="${i}";></div>`));
+    $board.append($(`<div class="floor hidden" style="width: ${(100 / size )}%; height: ${(100 / size )}%;" data-location="${i}";></div>`));
   }
   addWalls();
 }
