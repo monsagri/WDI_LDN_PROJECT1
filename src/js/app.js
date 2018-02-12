@@ -10,9 +10,9 @@ let $soundButton = null;
 let $healthBar = null;
 let audio = null;
 
-let level = 1;
+let level = 0;
 let startingLocation = 0;
-let treasureLocation = 0;
+let doorLocation = 0;
 let enemyLocations = [];
 let playerLocation = null;
 let boardSize = 0;
@@ -94,15 +94,16 @@ function getStartingLocation() {
   $(`[data-location="${startingLocation}"]`).addClass('player');
   $(`[data-location="${startingLocation}"]`).html('<img src="/images/knight.png">');
 }
-function getTreasureLocation() {
-  treasureLocation = Math.floor((Math.random() * boardSize));
-  while (walls[level].includes(treasureLocation) || treasureLocation === playerLocation) {
+function getDoorLocation() {
+  doorLocation = Math.floor((Math.random() * boardSize));
+  while (walls[level].includes(doorLocation) || doorLocation === playerLocation) {
     console.log('preventing spawning in a wall');
-    treasureLocation = Math.floor((Math.random() * boardSize));
+    doorLocation = Math.floor((Math.random() * boardSize));
   }
-  $(`[data-location="${treasureLocation}"]`).html('<img src="/images/treasure.svg">');
+  $(`[data-location="${doorLocation}"]`).html('<img src="/images/door1.png">');
 }
 function spawnEnemies(amount) {
+  enemyLocations = [];
   for (let i = 0; i < amount; i++){
     enemyLocations.push(Math.floor((Math.random() * boardSize)));
     while (walls[level].includes(enemyLocations[i]) || enemyLocations[i] === playerLocation) {
@@ -118,9 +119,12 @@ function newGame() {
   deactivateMovement();
   createMap(mapDimensions[level][0],mapDimensions[level][1]);
   getStartingLocation();
-  getTreasureLocation();
+  getDoorLocation();
   if (level === 1) {
     spawnEnemies(3);
+  }
+  if (level === 2) {
+    spawnEnemies(6);
   }
   // Set New Player location Div
   $playerDiv = $('.player');
@@ -241,7 +245,7 @@ function combat() {
   newGame();
 }
 function checkForWin() {
-  if (playerLocation === treasureLocation) {
+  if (playerLocation === doorLocation) {
     if (level === 2) {
       $('#scoremessage').removeClass('hide');
       $('#score').html(stepsTaken);
