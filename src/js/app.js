@@ -9,7 +9,7 @@ let $playerDiv = null;
 let $soundButton = null;
 let audio = null;
 
-let level = 0;
+let level = 1;
 let startingLocation = 0;
 let treasureLocation = 0;
 let playerLocation = null;
@@ -19,6 +19,8 @@ let boardWidth = 0;
 const walls = [2,4,9,11,12,14,18,24,27,32,33,37,38,46,47,52,59,60,62,63,64,66,72,76,79,84,86,91,92,94];
 let visibleSquares = [];
 let stepsTaken = 0;
+
+const mapDimensions = [[10,10],[20,10],[30,20]];
 
 //Check for DOM loaded
 $(function() {
@@ -40,7 +42,13 @@ function init(){
   $soundButton = $('#sound');
   audio = document.querySelector('audio');
   // run Functions
-  createMap(10,10);
+  console.log(mapDimensions);
+  console.log(level);
+  console.log(mapDimensions[level]);
+  console.log(mapDimensions[level][0]);
+  console.log(mapDimensions[level][1]);
+
+  createMap(mapDimensions[level][0],mapDimensions[level][1]);
   // add Event listeners
   $newGame.on('click', newGame);
   $soundButton.on('click', toggleMusic);
@@ -52,6 +60,9 @@ function createMap(height,width) {
   // while ($('.gameboard:first-child')) {
   //   $board.remove($('.gameboard:first-child'));
   // }
+  if (level > 0) {
+    $board.css({ 'height': '90vh', 'width': '90vw' });
+  }
   boardSize = height * width;
   boardHeight = height;
   boardWidth = width;
