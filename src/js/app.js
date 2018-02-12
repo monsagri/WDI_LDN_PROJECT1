@@ -9,15 +9,16 @@ let $playerDiv = null;
 let $soundButton = null;
 let audio = null;
 
+let level = 0;
 let startingLocation = 0;
 let treasureLocation = 0;
 let playerLocation = null;
 let boardSize = 0;
-let boardLength = 0;
+let boardHeight = 0;
+let boardWidth = 0;
 const walls = [2,4,9,11,12,14,18,24,27,32,33,37,38,46,47,52,59,60,62,63,64,66,72,76,79,84,86,91,92,94];
 let visibleSquares = [];
 let stepsTaken = 0;
-
 
 //Check for DOM loaded
 $(function() {
@@ -39,7 +40,7 @@ function init(){
   $soundButton = $('#sound');
   audio = document.querySelector('audio');
   // run Functions
-  createMap(10);
+  createMap(10,10);
   // add Event listeners
   $newGame.on('click', newGame);
   $soundButton.on('click', toggleMusic);
@@ -47,14 +48,15 @@ function init(){
 
 // Declare DOM-related Functions
 
-function createMap(size) {
+function createMap(height,width) {
   // while ($('.gameboard:first-child')) {
   //   $board.remove($('.gameboard:first-child'));
   // }
-  boardSize = size * size;
-  boardLength = size;
-  for (let i = 0; i < size*size; i++){
-    $board.append($(`<div class="floor hidden area" style="width: ${(100 / size )}%; height: ${(100 / size )}%;" data-location="${i}";></div>`));
+  boardSize = height * width;
+  boardHeight = height;
+  boardWidth = width;
+  for (let i = 0; i < boardSize; i++){
+    $board.append($(`<div class="floor hidden area" style="width: ${(100 / height )}%; height: ${(100 / width )}%;" data-location="${i}";></div>`));
   }
   addWalls();
 }
@@ -114,33 +116,33 @@ function move(e) {
   checkForWin();
 }
 function moveUp() {
-  if ((playerLocation - boardLength) < 0 || walls.includes((playerLocation - boardLength)) ) {
+  if ((playerLocation - boardHeight) < 0 || walls.includes((playerLocation - boardHeight)) ) {
     console.log('That\'s a wall.');
   } else {
     console.log('moving up');
     // $playerDiv.removeClass('player');
     // $(`[data-location="${playerLocation}"]`).addClass('player');
     $(`[data-location="${playerLocation}"]`).html('');
-    playerLocation -= boardLength;
+    playerLocation -= boardHeight;
     $(`[data-location="${playerLocation}"]`).html('<img src="/images/knight.png">');
     $playerDiv = $('.player');
   }
 }
 function moveDown() {
-  if (playerLocation === (boardSize - boardLength)||(playerLocation + boardLength) > boardSize || walls.includes((playerLocation + boardLength))) {
+  if (playerLocation === (boardSize - boardHeight)||(playerLocation + boardHeight) > boardSize || walls.includes((playerLocation + boardHeight))) {
     console.log('That\'s a wall.');
   } else {
     console.log('moving down');
     // $playerDiv.removeClass('player');
     // $(`[data-location="${playerLocation}"]`).toggleClass('player');
     $(`[data-location="${playerLocation}"]`).html('');
-    playerLocation += boardLength;
+    playerLocation += boardHeight;
     $(`[data-location="${playerLocation}"]`).html('<img src="/images/knight.png">');
     $playerDiv = $('.player');
   }
 }
 function moveLeft() {
-  if ((playerLocation === 0 || playerLocation % boardLength === 0 || walls.includes((playerLocation - 1)))) {
+  if ((playerLocation === 0 || playerLocation % boardWidth === 0 || walls.includes((playerLocation - 1)))) {
     console.log('You can\'t leave.');
   } else {
     console.log('moving left');
@@ -154,7 +156,7 @@ function moveLeft() {
   }
 }
 function moveRight() {
-  if ((playerLocation % boardLength === boardLength - 1) || walls.includes((playerLocation + 1))) {
+  if ((playerLocation % boardWidth === boardWidth - 1) || walls.includes((playerLocation + 1))) {
     console.log('That\'s a wall.');
   } else {
     console.log('moving right');
@@ -175,25 +177,26 @@ function changeVisibility() {
   });
 }
 function visionTop() {
-  if ((playerLocation - boardLength) < 0) return ;
-  else return playerLocation-boardLength;
+  if ((playerLocation - boardHeight) < 0) return ;
+  else return playerLocation-boardHeight;
 }
 function visionBottom() {
-  if (playerLocation === (boardSize - boardLength)||(playerLocation + boardLength) > boardSize) return ;
-  else return playerLocation+boardLength;
+  if (playerLocation === (boardSize - boardHeight)||(playerLocation + boardHeight) > boardSize) return ;
+  else return playerLocation+boardHeight;
 }
 function visionLeft() {
-  if ((playerLocation === 0 || playerLocation % boardLength === 0 )) return ;
+  if ((playerLocation === 0 || playerLocation % boardWidth === 0 )) return ;
   else return playerLocation -1;
 }
 function visionRight() {
-  if (playerLocation % boardLength === boardLength - 1) return;
+  if (playerLocation % boardWidth === boardWidth - 1) return;
   else return playerLocation + 1;
 }
 function checkForWin() {
   if (playerLocation === treasureLocation) {
     $('#scoremessage').removeClass('hide');
     $('#score').html(stepsTaken);
+    level ++;
     checkForHighscore();
     window.alert('YOU WIN!!!');
     setTimeout(deactivateMovement, 200);
