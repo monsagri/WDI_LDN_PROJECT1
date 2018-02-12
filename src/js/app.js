@@ -12,6 +12,7 @@ let audio = null;
 let level = 0;
 let startingLocation = 0;
 let treasureLocation = 0;
+let enemyLocations = [];
 let playerLocation = null;
 let boardSize = 0;
 let boardHeight = 0;
@@ -55,7 +56,7 @@ function init(){
 function createMap(height,width) {
   $board.html('');
   if (level > 0) {
-    $board.css({ 'height': '90vh', 'width': '90vw' });
+    $board.css({ 'height': '80vh', 'width': '80vw' });
   }
   boardSize = height * width;
   boardHeight = height;
@@ -86,6 +87,8 @@ function getStartingLocation() {
     console.log('preventing spawning in a wall');
     startingLocation = Math.floor((Math.random() * boardSize));
   }
+  $(`[data-location="${startingLocation}"]`).addClass('player');
+  $(`[data-location="${startingLocation}"]`).html('<img src="/images/knight.png">');
 }
 function getTreasureLocation() {
   treasureLocation = Math.floor((Math.random() * boardSize));
@@ -93,21 +96,29 @@ function getTreasureLocation() {
     console.log('preventing spawning in a wall');
     treasureLocation = Math.floor((Math.random() * boardSize));
   }
+  $(`[data-location="${treasureLocation}"]`).html('<img src="/images/treasure.svg">');
+}
+function spawnEnemies(amount) {
+  for (let i = 0; i < amount; i++){
+    enemyLocations.push(Math.floor((Math.random() * boardSize)));
+    while (walls[level].includes(enemyLocations[i]) || enemyLocations[i] === playerLocation) {
+      console.log('preventing spawning in a wall');
+      enemyLocations[i] = (Math.floor((Math.random() * boardSize)));
+    }
+  }
+  for (let j = 0; j < enemyLocations.length; j++) {
+    $(`[data-location="${enemyLocations[j]}"]`).html('<img src="/images/giant_rat.gif">');
+  }
 }
 function newGame() {
   deactivateMovement();
   createMap(mapDimensions[level][0],mapDimensions[level][1]);
-  $('#scoremessage').addClass('hide');
-  // Clear board of old sprites
-  $('div').removeClass('player');
-  $('.floor').html('');
-  // startingLocation = Math.floor((Math.random() * boardSize));
   getStartingLocation();
   getTreasureLocation();
+  if (level === 1) {
+    spawnEnemies(3);
+  }
   // Set New Player location Div
-  $(`[data-location="${startingLocation}"]`).addClass('player');
-  $(`[data-location="${startingLocation}"]`).html('<img src="/images/knight.png">');
-  $(`[data-location="${treasureLocation}"]`).html('<img src="/images/treasure.svg">');
   $playerDiv = $('.player');
   // Save Player Location to avoid DOM reference
   playerLocation = $playerDiv.data('location');
@@ -198,20 +209,21 @@ function visionBottom() {
   else return playerLocation+boardHeight;
 }
 function visionLeft() {
-  if ((playerLocation === 0 || playerLocation % boardWidth === 0 )) return ;
+  if ((playerLocation === 0 || playerLocation % boardHeight === 0 )) return ;
   else return playerLocation -1;
 }
 function visionRight() {
-  if (playerLocation % boardWidth === boardWidth - 1) return;
+  if (playerLocation % boardHeight === boardHeight - 1) return;
   else return playerLocation + 1;
 }
 function checkForWin() {
   if (playerLocation === treasureLocation) {
-    if (level === 3) {
+    if (level === 2) {
       $('#scoremessage').removeClass('hide');
       $('#score').html(stepsTaken);
       checkForHighscore();
       window.alert('YOU WIN!!!');
+      reset();
       setTimeout(deactivateMovement, 200);
     } else {
       level ++;
@@ -222,6 +234,15 @@ function checkForWin() {
 }
 function checkForHighscore() {
   if ($('#highscore').html() === '-' || stepsTaken < $('#highscore').html()) $('#highscore').html(stepsTaken);
+}
+function reset() {
+  $('#scoremessage').addClass('hide');
+  // Clear board of old sprites
+  $('div').removeClass('player');
+  $('.floor').html('');
+  // startingLocation = Math.floor((Math.random() * boardSize));
+  stepsTaken = 0;
+  level = 0;
 }
 function toggleMusic(e) {
   e.preventDefault();

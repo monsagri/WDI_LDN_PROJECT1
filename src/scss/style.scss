@@ -38,17 +38,6 @@ body {
         color: red;
       }
     }
-    .gameboard {
-      margin-top: 30px;
-      background-color: #000;
-      width: 90vh;
-      height: 90vh;
-      display: flex;
-      flex-wrap: wrap;
-      .player {
-        // background-color: red;
-      }
-    }
   }
   footer {
 
@@ -62,14 +51,14 @@ body {
 }
 
 .wall {
-  background-image: url('/images/wall1.png');
+  background-image: url('/images/wall3.png');
   background-repeat: no-repeat;
   background-size: cover;
 }
-
-.hidden {
-  opacity: 0;
-}
+//
+// .hidden {
+//   opacity: 0;
+// }
 
 .hide {
   display: none;
@@ -79,4 +68,33 @@ h2 {
   font-size: 1.5rem;
   font-weight: 800;
   text-decoration: underline;
+}
+.game {
+  display: flex;
+  .gameboard {
+    margin-top: 30px;
+    background-color: #000;
+    width: 80vh;
+    height: 80vh;
+    display: flex;
+    flex-wrap: wrap;
+    .player {
+      // background-color: red;
+    }
+  }
+  .information {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 30px;
+    border: 1px solid black;
+    width: 15vw;
+    height: 80vh;
+    .healthbar {
+      border: 1px solid black;
+      height: 20px;
+      width: 100px;
+      background-color: red;
+    }
+  }
 }
