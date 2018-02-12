@@ -9,14 +9,14 @@ let $playerDiv = null;
 let $soundButton = null;
 let audio = null;
 
-let level = 1;
+let level = 0;
 let startingLocation = 0;
 let treasureLocation = 0;
 let playerLocation = null;
 let boardSize = 0;
 let boardHeight = 0;
 let boardWidth = 0;
-const walls = [2,4,9,11,12,14,18,24,27,32,33,37,38,46,47,52,59,60,62,63,64,66,72,76,79,84,86,91,92,94];
+const walls = [[2,4,9,11,12,14,18,24,27,32,33,37,38,46,47,52,59,60,62,63,64,66,72,76,79,84,86,91,92,94],[0],[0]];
 let visibleSquares = [];
 let stepsTaken = 0;
 
@@ -28,6 +28,7 @@ $(function() {
   init();
 });
 function activateMovement() {
+  console.log('activating Movement');
   $('body').keydown(move);
 }
 function deactivateMovement() {
@@ -42,13 +43,7 @@ function init(){
   $soundButton = $('#sound');
   audio = document.querySelector('audio');
   // run Functions
-  console.log(mapDimensions);
-  console.log(level);
-  console.log(mapDimensions[level]);
-  console.log(mapDimensions[level][0]);
-  console.log(mapDimensions[level][1]);
 
-  createMap(mapDimensions[level][0],mapDimensions[level][1]);
   // add Event listeners
   $newGame.on('click', newGame);
   $soundButton.on('click', toggleMusic);
@@ -57,9 +52,7 @@ function init(){
 // Declare DOM-related Functions
 
 function createMap(height,width) {
-  // while ($('.gameboard:first-child')) {
-  //   $board.remove($('.gameboard:first-child'));
-  // }
+  $board.html('');
   if (level > 0) {
     $board.css({ 'height': '90vh', 'width': '90vw' });
   }
@@ -72,27 +65,28 @@ function createMap(height,width) {
   addWalls();
 }
 function addWalls() {
-  walls.forEach((location) => {
+  walls[level].forEach((location) => {
     $(`[data-location="${location}"]`).removeClass('floor');
     $(`[data-location="${location}"]`).addClass('wall');
   } );
 }
 function getStartingLocation() {
   startingLocation = Math.floor((Math.random() * boardSize));
-  while (walls.includes(startingLocation)) {
+  while (walls[level].includes(startingLocation)) {
     console.log('preventing spawning in a wall');
     startingLocation = Math.floor((Math.random() * boardSize));
   }
 }
 function getTreasureLocation() {
   treasureLocation = Math.floor((Math.random() * boardSize));
-  while (walls.includes(treasureLocation) || treasureLocation === playerLocation) {
+  while (walls[level].includes(treasureLocation) || treasureLocation === playerLocation) {
     console.log('preventing spawning in a wall');
     treasureLocation = Math.floor((Math.random() * boardSize));
   }
 }
 function newGame() {
   deactivateMovement();
+  createMap(mapDimensions[level][0],mapDimensions[level][1]);
   $('#scoremessage').addClass('hide');
   // Clear board of old sprites
   $('div').removeClass('player');
@@ -116,8 +110,6 @@ function newGame() {
 function move(e) {
   console.log(e.keyCode);
   const key = e.keyCode;
-  deactivateMovement();
-  setTimeout(activateMovement, 100);
   if (key === 87) moveUp();
   if (key === 83) moveDown();
   if (key === 65) moveLeft();
@@ -127,7 +119,7 @@ function move(e) {
   checkForWin();
 }
 function moveUp() {
-  if ((playerLocation - boardHeight) < 0 || walls.includes((playerLocation - boardHeight)) ) {
+  if ((playerLocation - boardHeight) < 0 || walls[level].includes((playerLocation - boardHeight)) ) {
     console.log('That\'s a wall.');
   } else {
     console.log('moving up');
@@ -140,7 +132,7 @@ function moveUp() {
   }
 }
 function moveDown() {
-  if (playerLocation === (boardSize - boardHeight)||(playerLocation + boardHeight) > boardSize || walls.includes((playerLocation + boardHeight))) {
+  if (playerLocation === (boardSize - boardHeight)||(playerLocation + boardHeight) > boardSize || walls[level].includes((playerLocation + boardHeight))) {
     console.log('That\'s a wall.');
   } else {
     console.log('moving down');
@@ -153,7 +145,7 @@ function moveDown() {
   }
 }
 function moveLeft() {
-  if ((playerLocation === 0 || playerLocation % boardWidth === 0 || walls.includes((playerLocation - 1)))) {
+  if ((playerLocation === 0 || playerLocation % boardWidth === 0 || walls[level].includes((playerLocation - 1)))) {
     console.log('You can\'t leave.');
   } else {
     console.log('moving left');
@@ -167,7 +159,7 @@ function moveLeft() {
   }
 }
 function moveRight() {
-  if ((playerLocation % boardWidth === boardWidth - 1) || walls.includes((playerLocation + 1))) {
+  if ((playerLocation % boardWidth === boardWidth - 1) || walls[level].includes((playerLocation + 1))) {
     console.log('That\'s a wall.');
   } else {
     console.log('moving right');
@@ -205,12 +197,17 @@ function visionRight() {
 }
 function checkForWin() {
   if (playerLocation === treasureLocation) {
-    $('#scoremessage').removeClass('hide');
-    $('#score').html(stepsTaken);
-    level ++;
-    checkForHighscore();
-    window.alert('YOU WIN!!!');
-    setTimeout(deactivateMovement, 200);
+    if (level === 3) {
+      $('#scoremessage').removeClass('hide');
+      $('#score').html(stepsTaken);
+      checkForHighscore();
+      window.alert('YOU WIN!!!');
+      setTimeout(deactivateMovement, 200);
+    } else {
+      level ++;
+      deactivateMovement();
+      newGame();
+    }
   }
 }
 function checkForHighscore() {
