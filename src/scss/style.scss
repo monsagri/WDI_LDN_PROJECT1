@@ -91,10 +91,12 @@ h2 {
     width: 15vw;
     height: 80vh;
     .healthbar {
-      border: 1px solid black;
-      height: 20px;
-      width: 100px;
-      background-color: red;
+      height: 40px;
+      width: 120px;
+      img {
+        height: 32px;
+        width: 32px;
+      }
     }
   }
 }
