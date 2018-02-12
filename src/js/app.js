@@ -9,14 +9,14 @@ let $playerDiv = null;
 let $soundButton = null;
 let audio = null;
 
-let level = 0;
+let level = 2;
 let startingLocation = 0;
 let treasureLocation = 0;
 let playerLocation = null;
 let boardSize = 0;
 let boardHeight = 0;
 let boardWidth = 0;
-const walls = [[2,4,9,11,12,14,18,24,27,32,33,37,38,46,47,52,59,60,62,63,64,66,72,76,79,84,86,91,92,94],[0],[0]];
+const walls = [[2,4,9,11,12,14,18,24,27,32,33,37,38,46,47,52,59,60,62,63,64,66,72,76,79,84,86,91,92,94],[3,6,9,15,23,28,33,34,35,36,37,41,44,47,57,59,63,64,66,67,72,77,82,91,93,99,105,109,110,111,114,120,122,123,126,131,135,138,143,158,160,161,163,164,165,166,168,171,178,188,192,197],[3,33,63,93,123,122,120,181,211,212,213,214,243,273,303,333,363,393,423,453,483,573,271,331,391,451,541,542,543,336,366,396,426,456,486,516,337,367,397,427,457,487,517]];
 let visibleSquares = [];
 let stepsTaken = 0;
 
@@ -47,6 +47,7 @@ function init(){
   // add Event listeners
   $newGame.on('click', newGame);
   $soundButton.on('click', toggleMusic);
+  createMap(30,20);
 }
 
 // Declare DOM-related Functions
@@ -63,6 +64,15 @@ function createMap(height,width) {
     $board.append($(`<div class="floor hidden area" style="width: ${(100 / height )}%; height: ${(100 / width )}%;" data-location="${i}";></div>`));
   }
   addWalls();
+  console.log($('.area'));
+  $('.area').on('click', makeWall);
+}
+function makeWall() {
+  console.log('I\'m a wall now.');
+  $(this).removeClass('floor');
+  $(this).addClass('wall');
+  console.log($(this).data('location'));
+  walls[level].push($(this).data('location'));
 }
 function addWalls() {
   walls[level].forEach((location) => {
@@ -145,8 +155,8 @@ function moveDown() {
   }
 }
 function moveLeft() {
-  if ((playerLocation === 0 || playerLocation % boardWidth === 0 || walls[level].includes((playerLocation - 1)))) {
-    console.log('You can\'t leave.');
+  if ((playerLocation === 0 || playerLocation % boardHeight === 0 || walls[level].includes((playerLocation - 1)))) {
+    console.log('That\'s a wall.');
   } else {
     console.log('moving left');
     // $playerDiv.removeClass('player');
@@ -159,12 +169,12 @@ function moveLeft() {
   }
 }
 function moveRight() {
-  if ((playerLocation % boardWidth === boardWidth - 1) || walls[level].includes((playerLocation + 1))) {
+  // This stops movement through top right corner, but also through center of map
+  // (playerLocation % boardWidth === boardWidth - 1) ||
+  if ((playerLocation % boardHeight === boardHeight - 1) || walls[level].includes((playerLocation + 1))) {
     console.log('That\'s a wall.');
   } else {
     console.log('moving right');
-    // $playerDiv.removeClass('player');
-    // $(`[data-location="${playerLocation}"]`).toggleClass('player');
     $(`[data-location="${playerLocation}"]`).html('');
     playerLocation += 1;
     $(`[data-location="${playerLocation}"]`).html('<img src="/images/knight.png">');
@@ -174,7 +184,7 @@ function moveRight() {
 function changeVisibility() {
   visibleSquares = [];
   visibleSquares.push(playerLocation,visionTop(),visionBottom(),visionLeft(),visionRight());
-  $('.area').addClass('hidden');
+  // $('.area').addClass('hidden');
   visibleSquares.forEach((square) => {
     $(`[data-location="${square}"]`).removeClass('hidden');
   });

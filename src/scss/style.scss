@@ -56,15 +56,18 @@ body {
 }
 
 .floor {
-  background-image: url('/images/floor.png');
+  background-image: url('/images/floor3.png');
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .wall {
   background-image: url('/images/wall1.png');
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 // .hidden {
-//   background: #000;
 //   opacity: 0;
 // }
 
