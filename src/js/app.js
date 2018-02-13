@@ -231,6 +231,7 @@ function newGame() {
   deactivateMovement();
   createMap(mapDimensions[level][0],mapDimensions[level][1]);
   reset();
+  startingHealth();
   // create player object
   player = new Character(characterDefinitions[0]);
   // place player on Map
@@ -302,6 +303,12 @@ function reset() {
   stepsTaken = 0;
   enemies = [];
   enemyLocations= [];
+}
+function startingHealth() {
+  $healthBar.html('');
+  for (let i = 0; i < 3; i++) {
+    $healthBar.append('<img src="/images/life.png" alt="A Heart">');
+  }
 }
 function toggleMusic(e) {
   e.preventDefault();
