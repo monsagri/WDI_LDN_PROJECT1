@@ -12,7 +12,7 @@ let music = null;
 let eventSound = null;
 let player = null;
 
-let level = 0;
+let level = 1;
 let startingLocation = 0;
 let doorLocation = 0;
 let enemyLocations = [];
@@ -25,11 +25,11 @@ let boardWidth = 0;
 let health = 3;
 
 const mapDimensions = [[10,10],[20,10],[30,20]];
-const enemyDefinitions = [
+const characterDefinitions = [
   {
     type: 'player',
     health: 3,
-    attack: 1,
+    damage: 1,
     armor: 0,
     speed: 0,
     imageSrc: '/images/knight.png'
@@ -37,7 +37,7 @@ const enemyDefinitions = [
   {
     type: 'rat',
     health: 1,
-    attack: 1,
+    damage: 1,
     armor: 0,
     speed: 0,
     imageSrc: '/images/giant_rat.gif'
@@ -45,7 +45,7 @@ const enemyDefinitions = [
   {
     type: 'goblin',
     health: 2,
-    attack: 1,
+    damage: 1,
     armor: 0,
     speed: 1000,
     imageSrc: '/images/goblin.png'
@@ -53,16 +53,16 @@ const enemyDefinitions = [
   {
     type: 'ogre',
     health: 3,
-    attack: 2,
+    damage: 2,
     armor: 1,
     speed: 2000,
     imageSrc: '/images/giant-rat.gif'
   }
 ];
-class Enemy {
+class Character {
   constructor(properties) {
     Object.assign(this, properties);
-    this.location = getEnemyLocation();
+    this.location = getCharacterLocation();
     this.moveKey = {
       87: - boardHeight,
       83: + boardHeight,
@@ -70,26 +70,27 @@ class Enemy {
       68: + 1
     };
   }
-  // attack() {
-  //   console.log(this.type + ' hits you for ' + (this.attack - player('armor') + ' damage.'));
-  //   player('health') - this.attack;
-  //   if (player('health') <= 0) {
-  //     console.log('You were killed by a ' + this.type);
-  //     return loseGame();
-  //   } else {
-  //     console.log(`You hit ${this.type} for ${player('attack')} damage!`);
-  //     this.health -= (player('attack') - this.armor);
-  //     if (this.health <= 0) {
-  //       //remove image from square
-  //       // move player to square
-  //       // console log kill message
-  //       //
-  //     } else {
-  //       // move player back to original square
-  //       // replace enemy image on its square
-  //     }
-  //   }
-  // }
+  attack() {
+    console.log(this.type + ' hits you for ' + (this.damage - player['armor']) + ' damage.');
+    player['health'] -= this.damage;
+    if (player['health'] <= 0) {
+      console.log('You were killed by a ' + this.type);
+      return window.alert('You lose!');
+    } else {
+      console.log(`You hit ${this.type} for ${player['damage']} damage!`);
+      this.health -= (player['damage'] - this.armor);
+    }
+    if (this.health <= 0) {
+      // remove the enemy from the map and enemyLocations
+      console.log('You killed a ' + this.type);
+      const index = enemyLocations.indexOf(this.location);
+      enemyLocations.splice(index, 1);
+      // move player to enemy location
+      $(`[data-location="${player.location}"]`).html('');
+      player.location = this.location;
+      $(`[data-location="${this.location}"]`).html(`<img src=${player.imageSrc}>`);
+    }
+  }
   move(key) {
     // check if key is a movekey
     if (!Object.keys(this.moveKey).includes(key.toString())) return;
@@ -182,17 +183,6 @@ function addWalls() {
     $(`[data-location="${location}"]`).addClass('wall');
   } );
 }
-// function getStartingLocation() {
-//   startingLocation = Math.floor((Math.random() * boardSize));
-//   while (walls[level].includes(startingLocation)) {
-//     console.log('preventing spawning in a wall');
-//     startingLocation = Math.floor((Math.random() * boardSize));
-//   }
-//   $(`[data-location="${startingLocation}"]`).addClass('player');
-//   $(`[data-location="${startingLocation}"]`).html('<img src="/images/knight.png">');
-// }
-
-
 
 function getDoorLocation() {
   doorLocation = Math.floor((Math.random() * boardSize));
@@ -202,33 +192,21 @@ function getDoorLocation() {
   }
   $(`[data-location="${doorLocation}"]`).html('<img src="/images/door1.png">');
 }
-// function spawnEnemies(amount) {
-//   enemyLocations = [];
-//   for (let i = 0; i < amount; i++){
-//     enemyLocations.push(Math.floor((Math.random() * boardSize)));
-//     while (walls[level].includes(enemyLocations[i]) || enemyLocations[i] === playerLocation) {
-//       console.log('preventing spawning in a wall');
-//       enemyLocations[i] = (Math.floor((Math.random() * boardSize)));
-//     }
-//   }
-//   for (let j = 0; j < enemyLocations.length; j++) {
-//     $(`[data-location="${enemyLocations[j]}"]`).html('<img src="/images/giant_rat.gif">');
-//   }
-// }
-// function spawnEnemies(amount) {
-//   // create enemies
-//   for (let i = 0; i < amount; i++){
-//     // get random Enemy source
-//     const enemyType = enemyDefinitions[1];
-//     const enemy = new Enemy(enemyType);
-//     enemies.push(enemy);
-//   }
-//   // Get images from enemy objects and place on grid
-//   for (let j = 0; j < enemies.length; j++) {
-//     $(`[data-location="${enemies[j]['location']}"]`).html(`<img src=${enemies[j]['imageSrc']}>`);
-//   }
-// }
-function getEnemyLocation() {
+function spawnEnemies(amount) {
+  // create enemies
+  for (let i = 0; i < amount; i++){
+    // get random Enemy source
+    const enemyType = characterDefinitions[1];
+    const enemy = new Character(enemyType);
+    enemies.push(enemy);
+    enemyLocations.push(enemy['location']);
+  }
+  // Get images from enemy objects and place on grid
+  for (let j = 0; j < enemies.length; j++) {
+    $(`[data-location="${enemies[j]['location']}"]`).html(`<img src=${enemies[j]['imageSrc']}>`);
+  }
+}
+function getCharacterLocation() {
   let enemyLocation = Math.floor((Math.random() * boardSize));
   while (walls[level].includes(enemyLocation)) {
     console.log('preventing spawning in a wall');
@@ -241,26 +219,21 @@ function getEnemyLocation() {
 function newGame() {
   deactivateMovement();
   createMap(mapDimensions[level][0],mapDimensions[level][1]);
-
-  // replace this with the following
-  // getStartingLocation();
+  reset();
   // create player object
-  player = new Enemy(enemyDefinitions[0]);
-  // place playe$(`[data-location="${this.location}"]`).html(`<img src=${this.imageSrc}`); on mapDimensions
+  player = new Character(characterDefinitions[0]);
+  // place player on Map
   $(`[data-location="${player.location}"]`).html(`<img src=${player.imageSrc}>`);
 
   // getDoorLocation();
-  // if (level === 1) {
-  //   spawnEnemies(3);
-  // }
-  // if (level === 2) {
-  //   spawnEnemies(6);
-  // }
-  // Set New Player location Div
-  $playerDiv = $('.player');
-  // Save Player Location to avoid DOM reference
-  playerLocation = player.getStartingLocation;
-  // console.log(playerLocation);
+
+  //spawn Enemies
+  if (level === 1) {
+    spawnEnemies(3);
+  }
+  if (level === 2) {
+    spawnEnemies(6);
+  }
   changeVisibility();
   // Toggle Event Listeners for movement
   activateMovement();
@@ -311,6 +284,7 @@ function checkForWin() {
       setTimeout(deactivateMovement, 200);
     } else {
       level ++;
+      enemies = [];
       deactivateMovement();
       newGame();
     }
@@ -326,7 +300,8 @@ function reset() {
   $('.floor').html('');
   // startingLocation = Math.floor((Math.random() * boardSize));
   stepsTaken = 0;
-  level = 0;
+  enemies = [];
+  enemyLocations= [];
 }
 function toggleMusic(e) {
   e.preventDefault();
