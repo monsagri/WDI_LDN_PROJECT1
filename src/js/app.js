@@ -56,7 +56,7 @@ const characterDefinitions = [
     damage: 2,
     armor: 1,
     speed: 2000,
-    imageSrc: '/images/giant-rat.gif'
+    imageSrc: '/images/ogre1.png'
   }
 ];
 class Character {
@@ -71,8 +71,10 @@ class Character {
     };
   }
   attack() {
+    combatSound();
     console.log(this.type + ' hits you for ' + (this.damage - player['armor']) + ' damage.');
     player['health'] -= this.damage;
+    $('#healthbar img:last-child').remove();
     if (player['health'] <= 0) {
       console.log('You were killed by a ' + this.type);
       return window.alert('You lose!');
@@ -96,8 +98,9 @@ class Character {
     if (!Object.keys(this.moveKey).includes(key.toString())) return;
     // check for enemy encounter
 
-    // checking if move is legal
+    // checking if move hits a wall
     if (walls[level].includes(this.location + this.moveKey[key])) return console.log('That is not a legal move.');
+    // check if move hits the boundary
     if (key === 87 && (this.location - boardHeight) < 0)  return console.log('That is not a legal move.');
     if (key === 83) {
       if (this.location === (boardSize - boardHeight) || (this.location + boardHeight) > boardSize) return console.log('That is not a legal move.');
@@ -106,6 +109,14 @@ class Character {
       if (this.location === 0 || this.location % boardHeight === 0) return console.log('That is not a legal move.');
     }
     if (key === 68 && this.location % boardHeight === boardHeight - 1) return console.log('That is not a legal move.');
+    // Check for combat
+    if (enemyLocations.includes(this.location + this.moveKey[key])){
+      const enemyFound = enemies.find((obj) =>{
+        return obj.location === this.location + this.moveKey[key];
+      });
+      enemyFound.attack();
+      return;
+    }
     // removing image from old Location
     $(`[data-location="${this.location}"]`).html('');
     //changing Location
@@ -196,7 +207,7 @@ function spawnEnemies(amount) {
   // create enemies
   for (let i = 0; i < amount; i++){
     // get random Enemy source
-    const enemyType = characterDefinitions[1];
+    const enemyType = characterDefinitions[2];
     const enemy = new Character(enemyType);
     enemies.push(enemy);
     enemyLocations.push(enemy['location']);
@@ -261,17 +272,6 @@ function visionLeft() {
 function visionRight() {
   if (player.location % boardHeight === boardHeight - 1) return;
   else return player.location + 1;
-}
-function combat() {
-  console.log('fight the beastie');
-  combatSound();
-  health -= 1;
-  console.log($('#healthbar img:last-child'));
-  $('#healthbar img:last-child').remove();
-  if (health > 0) return 'win';
-  window.alert('You died!');
-  reset();
-  newGame();
 }
 function checkForWin() {
   if (playerLocation === doorLocation) {
