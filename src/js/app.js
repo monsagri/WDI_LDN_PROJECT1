@@ -10,7 +10,7 @@ let $healthBar = null;
 let music = null;
 let eventSound = null;
 
-let level = 1;
+let level = 0;
 let player = null;
 let door = null;
 let enemies = [];
@@ -18,12 +18,9 @@ let enemyLocations = [];
 let items = [];
 let itemLocations = [];
 
-
 let boardSize = 0;
 let boardHeight = 0;
 const mapDimensions = [[10,10],[20,10],[30,20]];
-
-
 
 const characterDefinitions = [
   {
@@ -77,7 +74,7 @@ class Character {
     $('#healthbar img:last-child').remove();
     if (player['health'] <= 0) {
       console.log('You were killed by a ' + this.type);
-      return window.alert('You lose!');
+      loseGame();
     } else {
       console.log(`You hit ${this.type} for ${player['damage']} damage!`);
       this.health -= (player['damage'] - this.armor);
@@ -117,6 +114,19 @@ class Character {
       enemyFound.attack();
       return;
     }
+    // check for items
+    if (itemLocations.includes(this.location + this.moveKey[key])){
+      const itemFound = items.find((obj) =>{
+        return obj.location === this.location + this.moveKey[key];
+      });
+      console.log('You found a ' + itemFound.name);
+      console.log(Object.keys(player));
+      Object.keys(player).forEach(key => {
+        if (Object.keys(itemFound).includes(key)) {
+          player[key] += itemFound[key];
+        }
+      });
+    }
     // removing image from old Location
     $(`[data-location="${this.location}"]`).html('');
     //changing Location
@@ -135,12 +145,12 @@ const itemDefinitions = [
   },
   {
     name: 'dagger',
-    damage: 2,
+    damage: 1,
     imageSrc: '/images/dagger.png'
   },
   {
     name: 'sword',
-    damage: 3,
+    damage: 2,
     imageSrc: '/images/sword.png'
   },
   {
@@ -155,12 +165,12 @@ const itemDefinitions = [
   },
   {
     name: 'potion',
-    health: +1,
+    health: 1,
     imageSrc: '/images/health1.png'
   },
   {
     name: 'coin',
-    wealth: +1,
+    wealth: 1,
     imageSrc: 'images/coin1.png'
   }
 
@@ -234,11 +244,11 @@ function addWalls() {
     $(`[data-location="${location}"]`).addClass('wall');
   } );
 }
-function spawnEnemies(amount) {
+function spawnEnemies(amount,level = 1) {
   // create enemies
   for (let i = 0; i < amount; i++){
     // get random Enemy source
-    const enemyType = characterDefinitions[2];
+    const enemyType = characterDefinitions[level];
     const enemy = new Character(enemyType);
     enemies.push(enemy);
     enemyLocations.push(enemy['location']);
@@ -342,6 +352,16 @@ function checkForWin() {
       deactivateMovement();
       newGame();
     }
+  }
+}
+function loseGame() {
+  if (player.health <= 0) {
+    $('#scoremessage').removeClass('hide');
+    $('#score').html(stepsTaken);
+    checkForHighscore();
+    window.alert('YOU DIED!');
+    reset();
+    setTimeout(deactivateMovement, 200);
   }
 }
 function checkForHighscore() {
