@@ -120,10 +120,12 @@ class Character {
         return obj.location === this.location + this.moveKey[key];
       });
       console.log('You found a ' + itemFound.name);
-      console.log(Object.keys(player));
       Object.keys(player).forEach(key => {
-        if (Object.keys(itemFound).includes(key)) {
+        if (Object.keys(itemFound).includes(key) && key !== 'location' && key !== 'imageSrc' && key !== 'name') {
           player[key] += itemFound[key];
+          console.log($(`#${itemFound['type']}`));
+          console.log($(`#${itemFound['type']}`).src);
+          $(`#${itemFound['type']}`).attr('src',`${itemFound['imageSrc']}`);
         }
       });
     }
@@ -144,21 +146,25 @@ const itemDefinitions = [
     imageSrc: '/images/door1.png'
   },
   {
+    type: 'weapon',
     name: 'dagger',
     damage: 1,
     imageSrc: '/images/dagger.png'
   },
   {
+    type: 'weapon',
     name: 'sword',
     damage: 2,
     imageSrc: '/images/sword.png'
   },
   {
+    type: 'armor',
     name: 'leather',
     armor: 1,
     imageSrc: '/images/leather_armor.png'
   },
   {
+    type: 'armor',
     name: 'plate',
     armor: 2,
     imageSrc: '/images/plate_armor.png'
@@ -169,6 +175,7 @@ const itemDefinitions = [
     imageSrc: '/images/health1.png'
   },
   {
+    type: 'items',
     name: 'coin',
     wealth: 1,
     imageSrc: 'images/coin1.png'
