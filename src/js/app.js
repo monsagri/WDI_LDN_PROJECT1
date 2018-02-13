@@ -9,17 +9,22 @@ let $soundButton = null;
 let $healthBar = null;
 let music = null;
 let eventSound = null;
-let player = null;
-let door = null;
 
 let level = 1;
-let doorLocation = 0;
-let enemyLocations = [];
+let player = null;
+let door = null;
 let enemies = [];
+let enemyLocations = [];
+let items = [];
+let itemLocations = [];
+
+
 let boardSize = 0;
 let boardHeight = 0;
-
 const mapDimensions = [[10,10],[20,10],[30,20]];
+
+
+
 const characterDefinitions = [
   {
     type: 'player',
@@ -243,6 +248,27 @@ function spawnEnemies(amount) {
     $(`[data-location="${enemies[j]['location']}"]`).html(`<img src=${enemies[j]['imageSrc']}>`);
   }
 }
+function spawnItems(){
+  items = [];
+  itemLocations = [];
+  if (level === 1) {
+    const dagger = new Item(itemDefinitions[1]);
+    $(`[data-location="${dagger.location}"]`).html(`<img src=${dagger.imageSrc}>`);
+    items.push(dagger);
+    itemLocations.push(dagger.location);
+  }
+  if (level === 2) {
+    const sword = new Item(itemDefinitions[2]);
+    $(`[data-location="${sword.location}"]`).html(`<img src=${sword.imageSrc}>`);
+    items.push(sword);
+    itemLocations.push(sword.location);
+    const leather = new Item(itemDefinitions[3]);
+    $(`[data-location="${leather.location}"]`).html(`<img src=${leather.imageSrc}>`);
+    items.push(leather);
+    itemLocations.push(leather.location);
+  }
+
+}
 function getCharacterLocation() {
   let enemyLocation = Math.floor((Math.random() * boardSize));
   while (walls[level].includes(enemyLocation)) {
@@ -266,6 +292,7 @@ function newGame() {
   // place door on Map
   $(`[data-location="${door.location}"]`).html(`<img src=${door.imageSrc}>`);
   //spawn Enemies
+  spawnItems();
   if (level === 1) {
     spawnEnemies(3);
   }
