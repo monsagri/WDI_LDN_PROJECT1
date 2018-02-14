@@ -1,3 +1,4 @@
+/* global walls itemDefinitions characterDefinitions mapDimensions */
 console.log('JS locked and loaded');
 // Declare global variables
 
@@ -30,16 +31,6 @@ $(function() {
   // run DOM related functions
   init();
 });
-function activateMovement() {
-  console.log('activating Movement');
-  $('body').keydown(passKey);
-}
-function deactivateMovement() {
-  $('body').off('keydown');
-}
-function passKey(e) {
-  player.move(e.keyCode);
-}
 function init(){
   console.log('DOM loaded');
   // grab DOM-related variables
@@ -57,30 +48,41 @@ function init(){
   $('#mapmaker').on('click', activateMapEditor);
   $('#savemap').on('click', saveMap);
 }
-// Declare DOM-related Functions
+
+// Declare DOM-related Classes
 class Character {
   constructor(properties) {
-    Object.assign(this, properties);
     this.location = getCharacterLocation();
-    this.moveKey = {
+    this.moveKeys = {
       87: - boardHeight,
       83: + boardHeight,
       65: - 1,
       68: + 1
     };
+    Object.assign(this, properties);
+    this.nextLocationUp = this.location + this.moveKeys[87];
+    this.nextLocationDown = this.location + this.moveKeys[83];
+    this.nextLocationLeft = this.location + this.moveKeys[65];
+    this.nextLocationRight = this.location + this.moveKeys[68];
+    this.nextLocations = [this.nextLocationUp,this.nextLocationDown,this.nextLocationLeft,this.nextLocationRight];
   }
+
   attack() {
+    // NPC attacks
     combatSound();
     console.log(this.type + ' hits you for ' + (this.damage - player['armor']) + ' damage.');
     player['health'] -= this.damage;
     $('#healthbar img:last-child').remove();
+    // Check if player died
     if (player['health'] <= 0) {
       console.log('You were killed by a ' + this.type);
       loseGame();
+    // Player Attacks
     } else {
       console.log(`You hit ${this.type} for ${player['damage']} damage!`);
       this.health -= (player['damage'] - this.armor);
     }
+    // Check if NPC Died
     if (this.health <= 0) {
       // remove the enemy from the map and enemyLocations
       console.log('You killed a ' + this.type);
@@ -94,13 +96,13 @@ class Character {
   }
   move(key) {
     // check if key is a movekey
-    if (!Object.keys(this.moveKey).includes(key.toString())) return;
-    // check for enemy encounter
+    if (!(key in this.moveKeys)) return;
 
     // checking if move hits a wall
-    if (walls[level].includes(this.location + this.moveKey[key])) return console.log('That is not a legal move.');
+    if (walls[level].includes(this.location + this.moveKeys[key])) return console.log('That is not a legal move.');
+
     // check if move hits the boundary
-    if (key === 87 && (this.location - boardHeight) < 0)  return console.log('That is not a legal move.');
+    if (key === 87 && (this.nextLocationUp) < 0)  return console.log('That is not a legal move.');
     if (key === 83) {
       if (this.location === (boardSize - boardHeight) || (this.location + boardHeight) > boardSize) return console.log('That is not a legal move.');
     }
@@ -108,25 +110,27 @@ class Character {
       if (this.location === 0 || this.location % boardHeight === 0) return console.log('That is not a legal move.');
     }
     if (key === 68 && this.location % boardHeight === boardHeight - 1) return console.log('That is not a legal move.');
+
     // Check for combat
-    if (enemyLocations.includes(this.location + this.moveKey[key])){
+    if (enemyLocations.includes(this.location + this.moveKeys[key])){
       const enemyFound = enemies.find((obj) =>{
-        return obj.location === this.location + this.moveKey[key];
+        return obj.location === this.location + this.moveKeys[key];
       });
       enemyFound.attack();
       return;
     }
+
     // check for items
-    if (itemLocations.includes(this.location + this.moveKey[key])){
+    if (itemLocations.includes(this.location + this.moveKeys[key])){
       const itemFound = items.find((obj) =>{
-        return obj.location === this.location + this.moveKey[key];
+        return obj.location === this.location + this.moveKeys[key];
       });
       const index = itemLocations.indexOf(itemFound.location);
       itemLocations.splice(index, 1);
       console.log('You found a ' + itemFound.name);
       player.items.push(itemFound);
       Object.keys(player).forEach(key => {
-        if (Object.keys(itemFound).includes(key) && key !== 'location' && key !== 'imageSrc' && key !== 'name') {
+        if (Object.keys(itemFound).includes(key) && !['location', 'imageSrc', 'name'].includes(key)) {
           player[key] += itemFound[key];
           $(`#${itemFound['type']}`).attr('src',`${itemFound['imageSrc']}`);
         }
@@ -135,12 +139,17 @@ class Character {
     // removing image from old Location
     $(`[data-location="${this.location}"]`).html('');
     //changing Location
-    this.location += this.moveKey[key];
+    this.location += this.moveKeys[key];
     // adding image to new location
     $(`[data-location="${this.location}"]`).html(`<img src=${this.imageSrc}>`);
     changeVisibility();
     stepsTaken ++;
     checkForWin();
+    // Do calculations for next itemLocations
+    this.nextLocationUp = this.location + this.moveKeys[87];
+    this.nextLocationDown = this.location + this.moveKeys[83];
+    this.nextLocationLeft = this.location + this.moveKeys[65];
+    this.nextLocationRight = this.location + this.moveKeys[68];
   }
 }
 class Item {
@@ -150,6 +159,47 @@ class Item {
   }
 }
 
+// Declare DOM-related Functions
+
+// Functions related to movement
+function activateMovement() {
+  console.log('activating Movement');
+  $('body').keydown(passKey);
+}
+function deactivateMovement() {
+  $('body').off('keydown');
+}
+function passKey(e) {
+  player.move(e.keyCode);
+}
+
+// Functions related to Visibility
+function changeVisibility() {
+  visibleSquares = [];
+  visibleSquares.push(player.location,visionTop(),visionBottom(),visionLeft(),visionRight());
+  // $('.area').addClass('hidden');
+  visibleSquares.forEach((square) => {
+    $(`[data-location="${square}"]`).removeClass('hidden');
+  });
+}
+function visionTop() {
+  if ((player.location - boardHeight) < 0) return ;
+  else return player.location-boardHeight;
+}
+function visionBottom() {
+  if (player.location === (boardSize - boardHeight)||(player.location + boardHeight) > boardSize) return ;
+  else return player.location+boardHeight;
+}
+function visionLeft() {
+  if ((player.location === 0 || player.location % boardHeight === 0 )) return ;
+  else return player.location -1;
+}
+function visionRight() {
+  if (player.location % boardHeight === boardHeight - 1) return;
+  else return player.location + 1;
+}
+
+// Map Creation
 function createMap(height,width) {
   $board.html('');
   boardSize = height * width;
@@ -173,45 +223,13 @@ function minimumDistance(item,min) {
   }
 }
 
-function toggleMusic(e) {
-  e.preventDefault();
-  if (music.paused === false) {
-    music.pause();
-    console.log('music paused');
-  } else {
-    music.play();
-    console.log('music playing');
-  }
-}
-function activateMapEditor() {
-  // toggle this
-  var clicks = $(this).data('clicks');
-  if (clicks) {
-    console.log('mapeditor on');
-    $('.area').on('click', mapEditor);
-  } else {
-    console.log('mapeditor off');
-    $('.area').off('click', mapEditor);
-  }
-  $(this).data('clicks', !clicks);
-}
-function mapEditor() {
-  console.log('I\'m a wall now.');
-  $(this).removeClass('floor');
-  $(this).addClass('wall');
-  console.log($(this).data('location'));
-  walls[level].push($(this).data('location'));
-}
-function saveMap() {
-  console.log(walls[level]);
-}
-
+// Start a New Game and Populate Map
 function newGame() {
   // scroll to the gameboard
   $('html, body').animate({
     scrollTop: $board.offset().top - 30
   }, 2000);
-  
+
   deactivateMovement();
   createMap(mapDimensions[level][0],mapDimensions[level][1]);
   reset();
@@ -285,7 +303,6 @@ function spawnItems(){
   }
 
 }
-
 function getCharacterLocation() {
   let enemyLocation = Math.floor((Math.random() * boardSize));
   while (walls[level].includes(enemyLocation)) {
@@ -302,31 +319,17 @@ function startingHealth() {
   }
 }
 
-function changeVisibility() {
-  visibleSquares = [];
-  visibleSquares.push(player.location,visionTop(),visionBottom(),visionLeft(),visionRight());
-  // $('.area').addClass('hidden');
-  visibleSquares.forEach((square) => {
-    $(`[data-location="${square}"]`).removeClass('hidden');
-  });
+// Miscellaneous Options
+function toggleMusic(e) {
+  e.preventDefault();
+  if (music.paused === false) {
+    music.pause();
+    console.log('music paused');
+  } else {
+    music.play();
+    console.log('music playing');
+  }
 }
-function visionTop() {
-  if ((player.location - boardHeight) < 0) return ;
-  else return player.location-boardHeight;
-}
-function visionBottom() {
-  if (player.location === (boardSize - boardHeight)||(player.location + boardHeight) > boardSize) return ;
-  else return player.location+boardHeight;
-}
-function visionLeft() {
-  if ((player.location === 0 || player.location % boardHeight === 0 )) return ;
-  else return player.location -1;
-}
-function visionRight() {
-  if (player.location % boardHeight === boardHeight - 1) return;
-  else return player.location + 1;
-}
-
 function combatSound() {
   eventSound.src = '/sounds/combat.wav';
   if (eventSound.paused === false) {
@@ -338,6 +341,31 @@ function combatSound() {
   }
 }
 
+// Map Editor Mode
+function activateMapEditor() {
+  // toggle this
+  var clicks = $(this).data('clicks');
+  if (clicks) {
+    console.log('mapeditor on');
+    $('.area').on('click', mapEditor);
+  } else {
+    console.log('mapeditor off');
+    $('.area').off('click', mapEditor);
+  }
+  $(this).data('clicks', !clicks);
+}
+function mapEditor() {
+  console.log('I\'m a wall now.');
+  $(this).removeClass('floor');
+  $(this).addClass('wall');
+  console.log($(this).data('location'));
+  walls[level].push($(this).data('location'));
+}
+function saveMap() {
+  console.log(walls[level]);
+}
+
+// Administrative Functions
 function checkForWin() {
   if (player.location === door.location) {
     if (level === 2) {
