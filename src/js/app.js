@@ -1,4 +1,4 @@
-/* global walls itemDefinitions characterDefinitions mapDimensions */
+/* global walls itemDefinitions characterDefinitions mapDimensions instructions*/
 console.log('JS locked and loaded');
 // Declare global variables
 
@@ -7,6 +7,12 @@ let $board = null;
 let $newGame = null;
 let $soundButton = null;
 let $healthBar = null;
+let $healthBarNpc = null;
+let $damage = null;
+let $damageNpc = null;
+let $armor = null;
+let $armorNpc = null;
+let $backpack = null;
 let $timerDisplay = null;
 let $stepDisplay = null;
 let $enemiesKilledDisplay = null;
@@ -36,8 +42,7 @@ let visibleSquares = [];
 // Declare global functions
 
 //Check for DOM loaded
-$(function() {
-  // run DOM related functions
+$(function() {  // run DOM related functions
   init();
 });
 function init(){
@@ -52,6 +57,12 @@ function init(){
   $timerDisplay = $('#timer');
   $stepDisplay = $('#stepstaken');
   $enemiesKilledDisplay = $('#enemieskilled');
+  $healthBarNpc = $('#healthbarnpc');
+  $damage = $('#damage');
+  $damageNpc = $('#damagenpc');
+  $armor = $('#armor');
+  $armorNpc = $('#armornpc');
+  $backpack = $('#backpack');
   // run Functions
 
   // add Event listeners
@@ -203,7 +214,7 @@ class Character {
     // add armor
     $('#armornpc img').remove();
     for (let i = 0; i < (this.armor); i++){
-      $('#armornpc').append('<img src="/images/leather_armor.png" alt="Armor">');
+      $armorNpc.append('<img src="/images/leather_armor.png" alt="Armor">');
     }
   }
 }
@@ -291,7 +302,12 @@ function newGame() {
   }, 2000);
 
   reset();
+  deactivateMovement();
+
+  // create map
   createMap(mapDimensions[level][0],mapDimensions[level][1]);
+  // Display instructions
+  displayManual(0);
   // spawn player
   startingHealth();
   spawnPlayer();
@@ -391,6 +407,22 @@ function countGameTime() {
 function startGameTimer() {
   setInterval(countGameTime, 1000);
 }
+function displayManual(level) {
+  $($board.children()).hide();
+  $board.append(`<p>${instructions[level]}<p>`);
+  setTimeout(hideInstructions, 5000);
+  setTimeout(showGame, 5000);
+  setTimeout(function() {
+    $board.find('p').remove();
+  }, 5000);
+}
+function showGame() {
+  $board.find('div').show(2000);
+}
+function hideInstructions() {
+  $board.find('p').hide(2000);
+}
+
 // Map Editor Mode
 function activateMapEditor() {
   // toggle this
@@ -453,6 +485,7 @@ function levelUp() {
     spawnEnemies(3,1);
     spawnItems();
     spawnItems();
+    displayManual(1);
   }
   if (level === 2) {
     spawnEnemies(3,1);
@@ -462,8 +495,9 @@ function levelUp() {
     spawnItems();
     spawnItems();
     spawnItems();
+    displayManual(2);
   }
-
+  changeVisibility();
 }
 function loseGame() {
   if (player.health <= 0) {
@@ -485,6 +519,7 @@ function reset() {
   $('.floor').html('');
   // Stop Timer
   clearInterval(startGameTimer);
+  // reset everything
   level = 0;
   stepsTaken = 0;
   enemies = [];
@@ -493,4 +528,11 @@ function reset() {
   itemLocations = [];
   timeTaken = 0;
   $timerDisplay.html = 0;
+  $armor.html('');
+  $armorNpc.html('');
+  $damage.html('');
+  $damageNpc.html('');
+  $healthBar.html('');
+  $healthBarNpc.html('');
+  $backpack.html('');
 }

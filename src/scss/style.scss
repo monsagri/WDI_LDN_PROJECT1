@@ -56,9 +56,9 @@ body {
   background-size: cover;
 }
 
-// .hidden {
-//   opacity: 0;
-// }
+.hidden {
+  opacity: 0;
+}
 
 .hide {
   display: none;
@@ -80,8 +80,11 @@ h2 {
     height: 90vh;
     display: flex;
     flex-wrap: wrap;
-    .player {
-      // background-color: red;
+    p {
+      font-size: 2rem;
+      font-family: 'Press Start 2P', cursive;
+      font-weight: 500;
+      color: red;
     }
     img {
       height: 100%;

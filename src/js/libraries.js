@@ -1,4 +1,11 @@
 /* eslint-disable no-unused-vars */
+const instructions1 = 'You were poisoned by an evil wizard and left to die in a little room in this massive abandoned dungeon. <br> Find your way out and have your revenge! <br> You can move with W,A,S,D - find the door to the next floor.';
+
+const instructions2 = 'Good job! You managed to leave your personal little prison <br> But be careful, there are critters about that have been going hungry for far too long <br> Keep your eyes open for items that might help you during your escape';
+
+const instructions3 = 'You\'ve made it as far as I have come, my friend. <br> Be careful, some of the enemies on this level are restless and wander about in search of food';
+
+const instructions = [instructions1,instructions2,instructions3];
 
 const mapDimensions = [[10,10],[20,10],[30,20]];
 const characterDefinitions = [
