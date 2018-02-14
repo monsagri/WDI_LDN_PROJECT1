@@ -11,7 +11,7 @@ let $healthBar = null;
 let music = null;
 let eventSound = null;
 
-let level = 1;
+let level = 0;
 let player = null;
 let door = null;
 let enemies = [];
@@ -131,7 +131,7 @@ class Character {
       const itemFound = items.find((obj) =>{
         return obj.location === this.location + this.moveKeys[key];
       });
-      // Find index of item in locatinlist and remove it
+      // Find index of item in locationlist and remove it
       const index = itemLocations.indexOf(itemFound.location);
       itemLocations.splice(index, 1);
       // Add item to player backpack
@@ -141,14 +141,16 @@ class Character {
       Object.keys(player).forEach(key => {
         if (Object.keys(itemFound).includes(key) && !['location', 'imageSrc', 'name'].includes(key)) {
           player[key] += itemFound[key];
-          // Add item to it's corresponding slot on the information display
+          // If Item is a weapon add its damage to player damage display
           for (let i = 0; i < itemFound.damage; i++){
             console.log('adding ' + itemFound.damage +  ' damage for ' + itemFound.name);
             $('#damage').append(`<img src="/images/fist.png" alt=${itemFound['name']}>`);
           }
+          // If Item is armor add its value to player armor display
           for (let i = 0; i < itemFound.armor; i++){
             $('#armor').append(`<img src="/images/leather_armor.png" alt=${itemFound['name']}>`);
           }
+          // Add item to backpack
           $('#backpack').append(`<img src=${itemFound['imageSrc']} alt=${itemFound['name']}>`);
         }
       });
@@ -156,6 +158,7 @@ class Character {
     // removing image from old Location
     $(`[data-location="${this.location}"]`).html('');
     //changing Location
+    console.log('moving by ' + this.moveKeys[key]);
     this.location += this.moveKeys[key];
     // adding image to new location
     $(`[data-location="${this.location}"]`).html(`<img src=${this.imageSrc}>`);
@@ -237,9 +240,14 @@ function visionRight() {
 
 // Map Creation
 function createMap(height,width) {
+  //emptying gameboard
   $board.html('');
+  // changing global variables to new size
   boardSize = height * width;
   boardHeight = height;
+  console.log(boardSize);
+  console.log(boardHeight);
+  // appending new board
   for (let i = 0; i < boardSize; i++){
     $board.append($(`<div class="floor hidden area" style="width: ${(100 / height )}%; height: ${(100 / width )}%;" data-location="${i}";></div>`));
   }
@@ -275,15 +283,7 @@ function newGame() {
   spawnDoor();
   // spawn items
   spawnItems();
-  //spawn Enemies - move this to object library
-  if (level === 1) {
-    spawnEnemies(3,1);
-  }
-  if (level === 2) {
-    spawnEnemies(3,1);
-    spawnEnemies(2,2);
-    spawnEnemies(1,3);
-  }
+
   changeVisibility();
   // Toggle Event Listeners for movement
   activateMovement();
@@ -301,11 +301,11 @@ function spawnDoor() {
   // place door on Map
   $(`[data-location="${door.location}"]`).html(`<img src=${door.imageSrc}>`);
 }
-function spawnEnemies(amount,level = 1) {
+function spawnEnemies(amount,type = 1) {
   // create enemies
   for (let i = 0; i < amount; i++){
     // get random Enemy source
-    const enemyType = characterDefinitions[level];
+    const enemyType = characterDefinitions[type];
     const enemy = new Character(enemyType);
     minimumDistance(enemy,20);
     enemies.push(enemy);
@@ -317,8 +317,6 @@ function spawnEnemies(amount,level = 1) {
   }
 }
 function spawnItems(){
-  items = [];
-  itemLocations = [];
   if (level === 1) {
     const dagger = new Item(itemDefinitions[1]);
     minimumDistance(dagger, 10);
@@ -413,12 +411,40 @@ function checkForWin() {
       reset();
       setTimeout(deactivateMovement, 200);
     } else {
-      level ++;
-      enemies = [];
-      deactivateMovement();
-      newGame();
+      levelUp();
     }
   }
+}
+function levelUp() {
+  level ++;
+  // Reset all level related values
+  enemies = [];
+  items = [];
+  itemLocations = [];
+  enemyLocations = [];
+  // create mapmaker
+  createMap(mapDimensions[level][0],mapDimensions[level][1]);
+  // set new player location
+  player.location = getCharacterLocation();
+  // place player on Map
+  $(`[data-location="${player.location}"]`).html(`<img src=${player.imageSrc}>`);
+  // Update Player moveKeys
+  player.moveKeys[87] = - boardHeight;
+  player.moveKeys[83] = + boardHeight;
+  // Spawn door
+  spawnDoor();
+  // Spawn Items - Make this more general
+  spawnItems();
+  //spawn Enemies - move this to object library
+  if (level === 1) {
+    spawnEnemies(3,1);
+  }
+  if (level === 2) {
+    spawnEnemies(3,1);
+    spawnEnemies(2,2);
+    spawnEnemies(1,3);
+  }
+
 }
 function loseGame() {
   if (player.health <= 0) {
@@ -442,4 +468,6 @@ function reset() {
   stepsTaken = 0;
   enemies = [];
   enemyLocations= [];
+  items = [];
+  itemLocations = [];
 }
