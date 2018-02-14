@@ -10,7 +10,7 @@ let $healthBar = null;
 let music = null;
 let eventSound = null;
 
-let level = 0;
+let level = 2;
 let player = null;
 let door = null;
 let enemies = [];
@@ -35,6 +35,7 @@ const characterDefinitions = [
   },
   {
     type: 'rat',
+    name: 'rat',
     health: 1,
     damage: 1,
     armor: 0,
@@ -43,6 +44,7 @@ const characterDefinitions = [
   },
   {
     type: 'goblin',
+    name: 'goblin',
     health: 2,
     damage: 1,
     armor: 0,
@@ -51,6 +53,7 @@ const characterDefinitions = [
   },
   {
     type: 'ogre',
+    name: 'ogre',
     health: 3,
     damage: 2,
     armor: 1,
@@ -245,6 +248,12 @@ function addWalls() {
     $(`[data-location="${location}"]`).addClass('wall');
   } );
 }
+function minimumDistance(item,min) {
+  while (Math.abs((player.location-item.location)) < min) {
+    console.log('moving ' + item.name + ' further from player');
+    item.location = getCharacterLocation();
+  }
+}
 
 function toggleMusic(e) {
   e.preventDefault();
@@ -310,13 +319,7 @@ function spawnPlayer() {
 function spawnDoor() {
   door = new Item(itemDefinitions[0]);
   // ensure door is not too close to the Player
-  console.log(door.location);
-  console.log(player.location);
-  console.log(Math.abs((player.location-door.location)));
-  while (Math.abs((player.location-door.location)) < 49) {
-    console.log('moving door further from player');
-    door.location = getCharacterLocation();
-  }
+  minimumDistance(door,49);
   // place door on Map
   $(`[data-location="${door.location}"]`).html(`<img src=${door.imageSrc}>`);
 }
@@ -326,6 +329,7 @@ function spawnEnemies(amount,level = 1) {
     // get random Enemy source
     const enemyType = characterDefinitions[level];
     const enemy = new Character(enemyType);
+    minimumDistance(enemy,20);
     enemies.push(enemy);
     enemyLocations.push(enemy['location']);
   }
@@ -339,16 +343,19 @@ function spawnItems(){
   itemLocations = [];
   if (level === 1) {
     const dagger = new Item(itemDefinitions[1]);
+    minimumDistance(dagger, 10);
     $(`[data-location="${dagger.location}"]`).html(`<img src=${dagger.imageSrc}>`);
     items.push(dagger);
     itemLocations.push(dagger.location);
   }
   if (level === 2) {
     const sword = new Item(itemDefinitions[2]);
+    minimumDistance(sword, 10);
     $(`[data-location="${sword.location}"]`).html(`<img src=${sword.imageSrc}>`);
     items.push(sword);
     itemLocations.push(sword.location);
     const leather = new Item(itemDefinitions[3]);
+    minimumDistance(leather, 10);
     $(`[data-location="${leather.location}"]`).html(`<img src=${leather.imageSrc}>`);
     items.push(leather);
     itemLocations.push(leather.location);
