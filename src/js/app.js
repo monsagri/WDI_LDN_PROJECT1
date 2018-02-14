@@ -11,7 +11,7 @@ let $healthBar = null;
 let music = null;
 let eventSound = null;
 
-let level = 0;
+let level = 1;
 let player = null;
 let door = null;
 let enemies = [];
@@ -71,8 +71,12 @@ class Character {
     // NPC attacks
     combatSound();
     console.log(this.type + ' hits you for ' + (this.damage - player['armor']) + ' damage.');
-    player['health'] -= this.damage;
-    $('#healthbar img:last-child').remove();
+    // Apply Player Damage
+    player['health'] -= (this.damage - player['armor']);
+    // Remove appropiate number of hearts from display
+    for (let i = 0; i < (this.damage - player['armor']); i++){
+      $('#healthbar img:last-child').remove();
+    }
     // Check if player died
     if (player['health'] <= 0) {
       console.log('You were killed by a ' + this.type);
@@ -116,23 +120,30 @@ class Character {
       const enemyFound = enemies.find((obj) =>{
         return obj.location === this.location + this.moveKeys[key];
       });
+      enemyFound.updateDisplay();
       enemyFound.attack();
+      enemyFound.updateDisplay();
       return;
     }
 
-    // check for items
+    // check for items in new location
     if (itemLocations.includes(this.location + this.moveKeys[key])){
       const itemFound = items.find((obj) =>{
         return obj.location === this.location + this.moveKeys[key];
       });
+      // Find index of item in locatinlist and remove it
       const index = itemLocations.indexOf(itemFound.location);
       itemLocations.splice(index, 1);
+      // Add item to player backpack
       console.log('You found a ' + itemFound.name);
       player.items.push(itemFound);
+      // Update player stats according to Item keys and values
       Object.keys(player).forEach(key => {
         if (Object.keys(itemFound).includes(key) && !['location', 'imageSrc', 'name'].includes(key)) {
           player[key] += itemFound[key];
+          // Add item to it's corresponding slot on the information display
           $(`#${itemFound['type']}`).attr('src',`${itemFound['imageSrc']}`);
+          $('#backpack').append(`<img src=${itemFound['imageSrc']} alt=${itemFound['name']}>`);
         }
       });
     }
@@ -150,6 +161,25 @@ class Character {
     this.nextLocationDown = this.location + this.moveKeys[83];
     this.nextLocationLeft = this.location + this.moveKeys[65];
     this.nextLocationRight = this.location + this.moveKeys[68];
+  }
+  updateDisplay() {
+    // add enemy image
+    $('#imagenpc img').remove();
+    $('#imagenpc').append(`<img src=${this.imageSrc} alt=${this.name}>`);
+    // add lives
+    $('#healthbarnpc img').remove();
+    for (let i = 0; i < (this.health); i++){
+      $('#healthbarnpc').append('<img src="/images/life.png" alt="A Heart">');
+    }
+    // add Damage
+    $('#damagenpc img').remove();
+    for (let i = 0; i < (this.damage); i++){
+      $('#damagenpc').append('<img src="/images/fist.png" alt="A Fist">');
+    }
+    // add armor
+    for (let i = 0; i < (this.armor); i++){
+      $('#armornpc').append('<img src="/images/leather.png" alt="Armor">');
+    }
   }
 }
 class Item {
@@ -242,10 +272,12 @@ function newGame() {
   spawnItems();
   //spawn Enemies - move this to object library
   if (level === 1) {
-    spawnEnemies(3);
+    spawnEnemies(3,1);
   }
   if (level === 2) {
-    spawnEnemies(6);
+    spawnEnemies(3,1);
+    spawnEnemies(2,2);
+    spawnEnemies(1,3);
   }
   changeVisibility();
   // Toggle Event Listeners for movement
