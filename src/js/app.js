@@ -301,7 +301,7 @@ function spawnDoor() {
   // place door on Map
   $(`[data-location="${door.location}"]`).html(`<img src=${door.imageSrc}>`);
 }
-function spawnEnemies(amount,type = 1) {
+function spawnEnemies(amount = 1,type = 1) {
   // create enemies
   for (let i = 0; i < amount; i++){
     // get random Enemy source
@@ -316,27 +316,19 @@ function spawnEnemies(amount,type = 1) {
     $(`[data-location="${enemies[j]['location']}"]`).html(`<img src=${enemies[j]['imageSrc']}>`);
   }
 }
-function spawnItems(){
-  if (level === 1) {
-    const dagger = new Item(itemDefinitions[1]);
-    minimumDistance(dagger, 10);
-    $(`[data-location="${dagger.location}"]`).html(`<img src=${dagger.imageSrc}>`);
-    items.push(dagger);
-    itemLocations.push(dagger.location);
+function spawnItems(amount = 1, type = Math.ceil((Math.random() * itemDefinitions.length))) {
+  // If type is not given a random item is spawned
+  for (let i = 0; i < amount; i++){
+    const itemType = itemDefinitions[type];
+    const item = new Item(itemType);
+    minimumDistance(item,20);
+    items.push(item);
+    itemLocations.push(item['location']);
   }
-  if (level === 2) {
-    const sword = new Item(itemDefinitions[2]);
-    minimumDistance(sword, 10);
-    $(`[data-location="${sword.location}"]`).html(`<img src=${sword.imageSrc}>`);
-    items.push(sword);
-    itemLocations.push(sword.location);
-    const leather = new Item(itemDefinitions[3]);
-    minimumDistance(leather, 10);
-    $(`[data-location="${leather.location}"]`).html(`<img src=${leather.imageSrc}>`);
-    items.push(leather);
-    itemLocations.push(leather.location);
+  // Get images from Item objects and place on grid
+  for (let j = 0; j < items.length; j++) {
+    $(`[data-location="${items[j]['location']}"]`).html(`<img src=${items[j]['imageSrc']}>`);
   }
-
 }
 function getCharacterLocation() {
   let enemyLocation = Math.floor((Math.random() * boardSize));
@@ -433,16 +425,20 @@ function levelUp() {
   player.moveKeys[83] = + boardHeight;
   // Spawn door
   spawnDoor();
-  // Spawn Items - Make this more general
-  spawnItems();
   //spawn Enemies - move this to object library
   if (level === 1) {
     spawnEnemies(3,1);
+    spawnItems();
+    spawnItems();
   }
   if (level === 2) {
     spawnEnemies(3,1);
     spawnEnemies(2,2);
     spawnEnemies(1,3);
+    spawnItems();
+    spawnItems();
+    spawnItems();
+    spawnItems();
   }
 
 }
@@ -465,6 +461,7 @@ function reset() {
   $('div').removeClass('player');
   $('.floor').html('');
   // startingLocation = Math.floor((Math.random() * boardSize));
+  level = 0;
   stepsTaken = 0;
   enemies = [];
   enemyLocations= [];
