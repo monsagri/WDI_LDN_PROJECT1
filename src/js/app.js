@@ -29,6 +29,7 @@ const characterDefinitions = [
     damage: 1,
     armor: 0,
     speed: 0,
+    items: [],
     imageSrc: '/images/knight.png'
   },
   {
@@ -119,12 +120,13 @@ class Character {
       const itemFound = items.find((obj) =>{
         return obj.location === this.location + this.moveKey[key];
       });
+      const index = itemLocations.indexOf(itemFound.location);
+      itemLocations.splice(index, 1);
       console.log('You found a ' + itemFound.name);
+      player.items.push(itemFound);
       Object.keys(player).forEach(key => {
         if (Object.keys(itemFound).includes(key) && key !== 'location' && key !== 'imageSrc' && key !== 'name') {
           player[key] += itemFound[key];
-          console.log($(`#${itemFound['type']}`));
-          console.log($(`#${itemFound['type']}`).src);
           $(`#${itemFound['type']}`).attr('src',`${itemFound['imageSrc']}`);
         }
       });
@@ -222,7 +224,9 @@ function init(){
   // add Event listeners
   $newGame.on('click', newGame);
   $soundButton.on('click', toggleMusic);
-  createMap(30,20);
+  $('#mapmaker').on('click', activateMapEditor);
+  $('#savemap').on('click', saveMap);
+
 }
 
 // Declare DOM-related Functions
@@ -236,15 +240,31 @@ function createMap(height,width) {
     $board.append($(`<div class="floor hidden area" style="width: ${(100 / height )}%; height: ${(100 / width )}%;" data-location="${i}";></div>`));
   }
   addWalls();
-  // $('.area').on('click', makeWall);
+
 }
-// function makeWall() {
-//   console.log('I\'m a wall now.');
-//   $(this).removeClass('floor');
-//   $(this).addClass('wall');
-//   console.log($(this).data('location'));
-//   walls[level].push($(this).data('location'));
-// }
+
+function activateMapEditor() {
+  // toggle this
+  var clicks = $(this).data('clicks');
+  if (clicks) {
+    console.log('mapeditor on');
+    $('.area').on('click', mapEditor);
+  } else {
+    console.log('mapeditor off');
+    $('.area').off('click', mapEditor);
+  }
+  $(this).data('clicks', !clicks);
+}
+function saveMap() {
+  console.log(walls[level]);
+}
+function mapEditor() {
+  console.log('I\'m a wall now.');
+  $(this).removeClass('floor');
+  $(this).addClass('wall');
+  console.log($(this).data('location'));
+  walls[level].push($(this).data('location'));
+}
 function addWalls() {
   walls[level].forEach((location) => {
     $(`[data-location="${location}"]`).removeClass('floor');
