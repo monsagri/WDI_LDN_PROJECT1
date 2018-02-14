@@ -7,6 +7,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const del = require('del');
 const browserSync = require('browser-sync').create();
 const gulpIf = require('gulp-if');
+const concat = require('gulp-concat');
 
 gulp.task('clean:css', () => {
   return del(['public/css']);
@@ -64,7 +65,8 @@ gulp.task('css', ['clean:css'], done => {
 
 gulp.task('js', ['clean:js'], done => {
   pump([
-    gulp.src('src/js/app.js'),
+    gulp.src(['src/js/libraries.js', 'src/js/app.js']),
+    concat('app.js'),
     gulpIf(!global.production, sourcemaps.init()),
     babel({
       presets: ['env']

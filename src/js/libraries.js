@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 const mapDimensions = [[10,10],[20,10],[30,20]];
 const characterDefinitions = [
   {
