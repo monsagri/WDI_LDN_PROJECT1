@@ -142,7 +142,13 @@ class Character {
         if (Object.keys(itemFound).includes(key) && !['location', 'imageSrc', 'name'].includes(key)) {
           player[key] += itemFound[key];
           // Add item to it's corresponding slot on the information display
-          $(`#${itemFound['type']}`).attr('src',`${itemFound['imageSrc']}`);
+          for (let i = 0; i < itemFound.damage; i++){
+            console.log('adding ' + itemFound.damage +  ' damage for ' + itemFound.name);
+            $('#damage').append(`<img src="/images/fist.png" alt=${itemFound['name']}>`);
+          }
+          for (let i = 0; i < itemFound.armor; i++){
+            $('#armor').append(`<img src="/images/leather_armor.png" alt=${itemFound['name']}>`);
+          }
           $('#backpack').append(`<img src=${itemFound['imageSrc']} alt=${itemFound['name']}>`);
         }
       });
@@ -178,7 +184,7 @@ class Character {
     }
     // add armor
     for (let i = 0; i < (this.armor); i++){
-      $('#armornpc').append('<img src="/images/leather.png" alt="Armor">');
+      $('#armornpc').append('<img src="/images/leather_armor.png" alt="Armor">');
     }
   }
 }
@@ -260,11 +266,10 @@ function newGame() {
     scrollTop: $board.offset().top - 30
   }, 2000);
 
-  deactivateMovement();
-  createMap(mapDimensions[level][0],mapDimensions[level][1]);
   reset();
-  startingHealth();
+  createMap(mapDimensions[level][0],mapDimensions[level][1]);
   // spawn player
+  startingHealth();
   spawnPlayer();
   // spawn door
   spawnDoor();
