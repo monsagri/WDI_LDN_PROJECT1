@@ -74,7 +74,7 @@ const itemDefinitions = [
     type: 'items',
     name: 'coin',
     wealth: 1,
-    imageSrc: 'images/coin1.png'
+    imageSrc: 'images/coin.png'
   }
 
 ];

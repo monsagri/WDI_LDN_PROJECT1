@@ -2,26 +2,35 @@
 console.log('JS locked and loaded');
 // Declare global variables
 
-// const libraries = require('./libraries');
-
+// Dom Variables
 let $board = null;
 let $newGame = null;
 let $soundButton = null;
 let $healthBar = null;
+let $timerDisplay = null;
+let $stepDisplay = null;
+let $enemiesKilledDisplay = null;
 let music = null;
 let eventSound = null;
 
+// Scorekeeping variables
 let level = 0;
+let stepsTaken = 0;
+let enemiesKilled = 0;
+let timeTaken = 0;
+
+// Map Variables
+let boardSize = 0;
+let boardHeight = 0;
+
+// Gameplay Variables
 let player = null;
 let door = null;
 let enemies = [];
 let enemyLocations = [];
 let items = [];
 let itemLocations = [];
-let boardSize = 0;
-let boardHeight = 0;
 let visibleSquares = [];
-let stepsTaken = 0;
 
 
 // Declare global functions
@@ -40,6 +49,9 @@ function init(){
   music = document.querySelector('#backgroundmusic');
   eventSound = document.querySelector('#eventsound');
   $healthBar = $('#healthbar');
+  $timerDisplay = $('#timer');
+  $stepDisplay = $('#stepstaken');
+  $enemiesKilledDisplay = $('#enemieskilled');
   // run Functions
 
   // add Event listeners
@@ -96,6 +108,8 @@ class Character {
       $(`[data-location="${player.location}"]`).html('');
       player.location = this.location;
       $(`[data-location="${this.location}"]`).html(`<img src=${player.imageSrc}>`);
+      enemiesKilled ++;
+      $enemiesKilledDisplay.text(enemiesKilled);
     }
   }
   move(key) {
@@ -164,6 +178,7 @@ class Character {
     $(`[data-location="${this.location}"]`).html(`<img src=${this.imageSrc}>`);
     changeVisibility();
     stepsTaken ++;
+    $stepDisplay.text(stepsTaken);
     checkForWin();
     // Do calculations for next itemLocations
     this.nextLocationUp = this.location + this.moveKeys[87];
@@ -186,6 +201,7 @@ class Character {
       $('#damagenpc').append('<img src="/images/fist.png" alt="A Fist">');
     }
     // add armor
+    $('#armornpc img').remove();
     for (let i = 0; i < (this.armor); i++){
       $('#armornpc').append('<img src="/images/leather_armor.png" alt="Armor">');
     }
@@ -287,6 +303,7 @@ function newGame() {
   changeVisibility();
   // Toggle Event Listeners for movement
   activateMovement();
+  startGameTimer();
 }
 function spawnPlayer() {
   // create player object
@@ -316,7 +333,7 @@ function spawnEnemies(amount = 1,type = 1) {
     $(`[data-location="${enemies[j]['location']}"]`).html(`<img src=${enemies[j]['imageSrc']}>`);
   }
 }
-function spawnItems(amount = 1, type = Math.ceil((Math.random() * itemDefinitions.length))) {
+function spawnItems(amount = 1, type = Math.ceil((Math.random() * (itemDefinitions.length -1)))) {
   // If type is not given a random item is spawned
   for (let i = 0; i < amount; i++){
     const itemType = itemDefinitions[type];
@@ -367,7 +384,13 @@ function combatSound() {
     console.log('eventSound playing');
   }
 }
-
+function countGameTime() {
+  timeTaken ++;
+  $timerDisplay.text(timeTaken);
+}
+function startGameTimer() {
+  setInterval(countGameTime, 1000);
+}
 // Map Editor Mode
 function activateMapEditor() {
   // toggle this
@@ -399,7 +422,7 @@ function checkForWin() {
       $('#scoremessage').removeClass('hide');
       $('#score').html(stepsTaken);
       checkForHighscore();
-      window.alert('YOU WIN!!!');
+      window.alert(`YOU WIN!!! \n It took you ${timeTaken/60} minutes and ${stepsTaken} to reach the end of the Maze. \n You killed ${enemiesKilled} enemies along the way` );
       reset();
       setTimeout(deactivateMovement, 200);
     } else {
@@ -460,11 +483,14 @@ function reset() {
   // Clear board of old sprites
   $('div').removeClass('player');
   $('.floor').html('');
-  // startingLocation = Math.floor((Math.random() * boardSize));
+  // Stop Timer
+  clearInterval(startGameTimer);
   level = 0;
   stepsTaken = 0;
   enemies = [];
   enemyLocations= [];
   items = [];
   itemLocations = [];
+  timeTaken = 0;
+  $timerDisplay.html = 0;
 }
