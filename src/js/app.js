@@ -528,7 +528,8 @@ function levelUp() {
     spawnEnemies(3,1);
     spawnEnemies(2,2);
     spawnEnemies(1,3);
-    spawnItems();
+    spawnItems(1,2);
+    spawnItems(1,3);
     spawnItems();
     spawnItems();
     spawnStrongItems();
