@@ -310,13 +310,14 @@ function newGame() {
   // Display instructions
   displayManual(0);
   // spawn player
-  startingHealth();
+  // startingHealth();
   spawnPlayer();
   // spawn door
   spawnDoor();
   // spawn items
   spawnItems();
 
+  updatePlayerDisplay();
   changeVisibility();
   // Toggle Event Listeners for movement
   activateMovement();
@@ -335,6 +336,7 @@ function spawnDoor() {
   // place door on Map
   $(`[data-location="${door.location}"]`).html(`<img src=${door.imageSrc}>`);
 }
+// Struggling to combine these into one function because of the random type selection
 function spawnItems(amount = 1, type = Math.ceil((Math.random() * (itemDefinitions.length -1)))) {
   // If type is not given a random item is spawned
   for (let i = 0; i < amount; i++){
@@ -390,12 +392,12 @@ function getCharacterLocation() {
   enemyLocations.push[enemyLocation];
   return enemyLocation;
 }
-function startingHealth() {
-  $healthBar.html('');
-  for (let i = 0; i < 3; i++) {
-    $healthBar.append('<img src="/images/life.png" alt="A Heart">');
-  }
-}
+// function startingHealth() {
+//   $healthBar.html('');
+//   for (let i = 0; i < 3; i++) {
+//     $healthBar.append('<img src="/images/life.png" alt="A Heart">');
+//   }
+// }
 
 // Miscellaneous Options
 function toggleMusic(e) {
