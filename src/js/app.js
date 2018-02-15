@@ -1,4 +1,4 @@
-/* global walls itemDefinitions characterDefinitions mapDimensions instructions*/
+/* global walls itemDefinitions characterDefinitions mapDimensions instructions strongItemDefinitions*/
 console.log('JS locked and loaded');
 // Declare global variables
 
@@ -335,21 +335,6 @@ function spawnDoor() {
   // place door on Map
   $(`[data-location="${door.location}"]`).html(`<img src=${door.imageSrc}>`);
 }
-function spawnEnemies(amount = 1,type = 1) {
-  // create enemies
-  for (let i = 0; i < amount; i++){
-    // get random Enemy source
-    const enemyType = characterDefinitions[type];
-    const enemy = new Character(enemyType);
-    minimumDistance(enemy,20);
-    enemies.push(enemy);
-    enemyLocations.push(enemy['location']);
-  }
-  // Get images from enemy objects and place on grid
-  for (let j = 0; j < enemies.length; j++) {
-    $(`[data-location="${enemies[j]['location']}"]`).html(`<img src=${enemies[j]['imageSrc']}>`);
-  }
-}
 function spawnItems(amount = 1, type = Math.ceil((Math.random() * (itemDefinitions.length -1)))) {
   // If type is not given a random item is spawned
   for (let i = 0; i < amount; i++){
@@ -360,8 +345,40 @@ function spawnItems(amount = 1, type = Math.ceil((Math.random() * (itemDefinitio
     itemLocations.push(item['location']);
   }
   // Get images from Item objects and place on grid
-  for (let j = 0; j < items.length; j++) {
-    $(`[data-location="${items[j]['location']}"]`).html(`<img src=${items[j]['imageSrc']}>`);
+  items.forEach(item => {
+    $(`[data-location="${item['location']}"]`).html(`<img src=${item['imageSrc']}>`);
+  });
+}
+function spawnStrongItems(amount = 1, type = Math.ceil((Math.random() * (strongItemDefinitions.length -1)))) {
+  // If type is not given a random item is spawned
+  for (let i = 0; i < amount; i++){
+    const itemType = strongItemDefinitions[type];
+    const item = new Item(itemType);
+    minimumDistance(item,20);
+    items.push(item);
+    itemLocations.push(item['location']);
+  }
+  // Get images from Item objects and place on grid
+  items.forEach(item => {
+    $(`[data-location="${item['location']}"]`).html(`<img src=${item['imageSrc']}>`);
+  });
+}
+function spawnEnemies(amount = 1,type = 1) {
+  // create enemies
+  for (let i = 0; i < amount; i++){
+    // get random Enemy source
+    const enemyType = characterDefinitions[type];
+    const enemy = new Character(enemyType);
+    while (enemyLocations.includes(enemy['location']) || itemLocations.includes(enemy['location'])) {
+      enemy['location'] = getCharacterLocation();
+    }
+    minimumDistance(enemy,20);
+    enemies.push(enemy);
+    enemyLocations.push(enemy['location']);
+  }
+  // Get images from enemy objects and place on grid
+  for (let j = 0; j < enemies.length; j++) {
+    $(`[data-location="${enemies[j]['location']}"]`).html(`<img src=${enemies[j]['imageSrc']}>`);
   }
 }
 function getCharacterLocation() {
@@ -475,10 +492,11 @@ function checkForWin() {
   if (player.location === door.location) {
     if (level === 2) {
       revealMap();
-      $('#scoremessage').removeClass('hide');
-      $('#score').html(stepsTaken);
+      $('#scoremessage').text(`YOU WIN!!! \n It took you ${timeTaken/60} minutes and ${stepsTaken} steps to reach the end of the Maze. \n You killed ${enemiesKilled} enemies along the way`);
+      $('.scoremessage').removeClass('hide');
+      // $('#score').html(stepsTaken);
       checkForHighscore();
-      window.alert(`YOU WIN!!! \n It took you ${timeTaken/60} minutes and ${stepsTaken} steps to reach the end of the Maze. \n You killed ${enemiesKilled} enemies along the way` );
+      window.alert(`YOU WIN!!! \n It took you ${timeTaken/60} minutes and ${stepsTaken} steps to reach the end of the Maze. \n You killed ${enemiesKilled} enemies along the way`);
       setTimeout(reset,3000);
       setTimeout(deactivateMovement, 200);
     } else {
@@ -511,6 +529,7 @@ function levelUp() {
   //spawn Enemies - move this to object library
   if (level === 1) {
     spawnEnemies(3,1);
+    spawnEnemies(1,2);
     spawnItems();
     spawnItems();
     displayManual(1);
@@ -522,7 +541,7 @@ function levelUp() {
     spawnItems();
     spawnItems();
     spawnItems();
-    spawnItems();
+    spawnStrongItems();
     displayManual(2);
   }
   changeVisibility();
@@ -531,7 +550,7 @@ function levelUp() {
 function loseGame() {
   if (player.health <= 0) {
     $('#scoremessage').removeClass('hide');
-    $('#score').html(stepsTaken);
+    // $('#score').html(stepsTaken);
     checkForHighscore();
     window.alert('YOU DIED!');
     reset();
