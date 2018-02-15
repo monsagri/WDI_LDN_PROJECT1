@@ -79,7 +79,7 @@ function init(){
 }
 
 // Declare DOM-related Classes
-class Character {
+class Enemy {
   constructor(properties) {
     this.location = getCharacterLocation();
     this.moveKeys = {
@@ -89,13 +89,7 @@ class Character {
       68: + 1
     };
     Object.assign(this, properties);
-    this.nextLocationUp = this.location + this.moveKeys[87];
-    this.nextLocationDown = this.location + this.moveKeys[83];
-    this.nextLocationLeft = this.location + this.moveKeys[65];
-    this.nextLocationRight = this.location + this.moveKeys[68];
-    this.nextLocations = [this.nextLocationUp,this.nextLocationDown,this.nextLocationLeft,this.nextLocationRight];
   }
-
   attack() {
     // NPC attacks
     combatSound();
@@ -130,8 +124,70 @@ class Character {
     }
   }
   move(key) {
+    // checking if move hits a wall
+    if (walls[level].includes(this.location + this.moveKeys[key])) return console.log('That is not a legal move.');
 
+    // check if move hits the boundary
+    if (key === 87 && (this.nextLocationUp) < 0)  return console.log('That is not a legal move.');
+    if (key === 83) {
+      if (this.location === (boardSize - boardHeight) || (this.location + boardHeight) > boardSize) return console.log('That is not a legal move.');
+    }
+    if (key === 65) {
+      if (this.location === 0 || this.location % boardHeight === 0) return console.log('That is not a legal move.');
+    }
+    if (key === 68 && this.location % boardHeight === boardHeight - 1) return console.log('That is not a legal move.');
+    // removing image from old Location
+    console.log('removing image from old location at ' + this.location);
+    $(`[data-location="${this.location}"]`).html('');
+    // remove old location from enemyLocations
+    const index = enemyLocations.indexOf(this.location);
+    enemyLocations.splice(index, 1);
+    //changing Location
+    this.location += this.moveKeys[key.toString()];
+    // adding image to new location
+    $(`[data-location="${this.location}"]`).html(`<img src=${this.imageSrc}>`);
 
+    // add new location to enemylocations
+    enemyLocations.push(this.location);
+  }
+  updateDisplay() {
+    // add enemy image
+    $('#imagenpc img').remove();
+    $('#imagenpc').append(`<img src=${this.imageSrc} alt=${this.name}>`);
+    // add lives
+    $('#healthbarnpc img').remove();
+    for (let i = 0; i < (this.health); i++){
+      $('#healthbarnpc').append('<img src="/images/life.png" alt="A Heart">');
+    }
+    // add Damage
+    $('#damagenpc img').remove();
+    for (let i = 0; i < (this.damage); i++){
+      $('#damagenpc').append('<img src="/images/fist.png" alt="A Fist">');
+    }
+    // add armor
+    $('#armornpc img').remove();
+    for (let i = 0; i < (this.armor); i++){
+      $armorNpc.append('<img src="/images/leather_armor.png" alt="Armor">');
+    }
+  }
+}
+class Character {
+  constructor(properties) {
+    this.location = getCharacterLocation();
+    this.moveKeys = {
+      87: - boardHeight,
+      83: + boardHeight,
+      65: - 1,
+      68: + 1
+    };
+    Object.assign(this, properties);
+    this.nextLocationUp = this.location + this.moveKeys[87];
+    this.nextLocationDown = this.location + this.moveKeys[83];
+    this.nextLocationLeft = this.location + this.moveKeys[65];
+    this.nextLocationRight = this.location + this.moveKeys[68];
+    this.nextLocations = [this.nextLocationUp,this.nextLocationDown,this.nextLocationLeft,this.nextLocationRight];
+  }
+  move(key) {
     // checking if move hits a wall
     if (walls[level].includes(this.location + this.moveKeys[key])) return console.log('That is not a legal move.');
 
@@ -201,26 +257,6 @@ class Character {
     this.nextLocationLeft = this.location + this.moveKeys[65];
     this.nextLocationRight = this.location + this.moveKeys[68];
   }
-  updateDisplay() {
-    // add enemy image
-    $('#imagenpc img').remove();
-    $('#imagenpc').append(`<img src=${this.imageSrc} alt=${this.name}>`);
-    // add lives
-    $('#healthbarnpc img').remove();
-    for (let i = 0; i < (this.health); i++){
-      $('#healthbarnpc').append('<img src="/images/life.png" alt="A Heart">');
-    }
-    // add Damage
-    $('#damagenpc img').remove();
-    for (let i = 0; i < (this.damage); i++){
-      $('#damagenpc').append('<img src="/images/fist.png" alt="A Fist">');
-    }
-    // add armor
-    $('#armornpc img').remove();
-    for (let i = 0; i < (this.armor); i++){
-      $armorNpc.append('<img src="/images/leather_armor.png" alt="Armor">');
-    }
-  }
 }
 class Item {
   constructor(properties) {
@@ -248,9 +284,9 @@ function passKey(e) {
 }
 // passes an enemy a random move order
 function moveEnemies() {
-  const possibleMoves = [87,83,65,63];
-  const randomMoveKey = Math.floor(Math.random() * 4);
+  const possibleMoves = [87,83,65,68];
   enemies.forEach(enemy => {
+    const randomMoveKey = Math.floor(Math.random() * 4);
     enemy.move(possibleMoves[randomMoveKey]);
   });
 }
@@ -383,7 +419,7 @@ function spawnEnemies(amount = 1,type = 1) {
   for (let i = 0; i < amount; i++){
     // get random Enemy source
     const enemyType = characterDefinitions[type];
-    const enemy = new Character(enemyType);
+    const enemy = new Enemy(enemyType);
     while (enemyLocations.includes(enemy['location']) || itemLocations.includes(enemy['location'])) {
       enemy['location'] = getCharacterLocation();
     }
