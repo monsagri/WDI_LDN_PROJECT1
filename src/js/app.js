@@ -116,12 +116,8 @@ class Enemy {
       const index = enemyLocations.indexOf(this.location);
       enemyLocations.splice(index, 1);
       // remove the enemy from enemies array
-      console.log('Enemies array is currently ' + enemies);
-      console.log('removing ' + this + 'from enemies array');
       const index1 = enemies.indexOf(this);
-      console.log('the index of this object is' + index1);
       enemies.splice(index1, 1);
-      console.log('Enemies array is now ' + enemies);
       // move player to enemy location
       $(`[data-location="${player.location}"]`).html('');
       player.location = this.location;
@@ -143,6 +139,14 @@ class Enemy {
       if (this.location === 0 || this.location % boardHeight === 0) return console.log('That is not a legal move.');
     }
     if (key === 68 && this.location % boardHeight === boardHeight - 1) return console.log('That is not a legal move.');
+    // Check for combat
+    if (player.location === (this.location + this.moveKeys[key])){
+      this.updateDisplay();
+      this.attack();
+      this.updateDisplay();
+      return;
+    }
+
     // removing image from old Location
     console.log('removing image from old location at ' + this.location);
     $(`[data-location="${this.location}"]`).html('');
@@ -598,7 +602,7 @@ function levelUp() {
     spawnItems();
     spawnStrongItems();
     displayManual(2);
-    startEnemyMovement();
+    setTimeout(startEnemyMovement(),8000);
   }
   if (level === 3) {
     spawnEnemies(7,1);
@@ -612,10 +616,11 @@ function levelUp() {
     spawnItems();
     spawnStrongItems();
     spawnStrongItems();
-    startEnemyMovement();
+    setTimeout(startEnemyMovement(),8000)
   }
   changeVisibility();
   activateMovement();
+
 }
 function loseGame() {
   if (player.health <= 0) {
