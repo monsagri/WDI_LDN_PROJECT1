@@ -244,7 +244,6 @@ function passKey(e) {
 function changeVisibility() {
   visibleSquares = [];
   visibleSquares.push(player.location,visionTop(),visionBottom(),visionLeft(),visionRight());
-  // $('.area').addClass('hidden');
   visibleSquares.forEach((square) => {
     $(`[data-location="${square}"]`).removeClass('hidden');
   });
@@ -309,14 +308,11 @@ function newGame() {
   createMap(mapDimensions[level][0],mapDimensions[level][1]);
   // Display instructions
   displayManual(0);
-  // spawn player
-  startingHealth();
   spawnPlayer();
-  // spawn door
   spawnDoor();
-  // spawn items
   spawnItems();
 
+  updatePlayerDisplay();
   changeVisibility();
   // Toggle Event Listeners for movement
   activateMovement();
@@ -335,6 +331,7 @@ function spawnDoor() {
   // place door on Map
   $(`[data-location="${door.location}"]`).html(`<img src=${door.imageSrc}>`);
 }
+// Struggling to combine these into one function because of the random type selection
 function spawnItems(amount = 1, type = Math.ceil((Math.random() * (itemDefinitions.length -1)))) {
   // If type is not given a random item is spawned
   for (let i = 0; i < amount; i++){
@@ -350,7 +347,7 @@ function spawnItems(amount = 1, type = Math.ceil((Math.random() * (itemDefinitio
   });
 }
 function spawnStrongItems(amount = 1, type = Math.ceil((Math.random() * (strongItemDefinitions.length -1)))) {
-  // If type is not given a random item is spawned
+  // If type is not given a random Strong item is spawned
   for (let i = 0; i < amount; i++){
     const itemType = strongItemDefinitions[type];
     const item = new Item(itemType);
@@ -389,12 +386,6 @@ function getCharacterLocation() {
   }
   enemyLocations.push[enemyLocation];
   return enemyLocation;
-}
-function startingHealth() {
-  $healthBar.html('');
-  for (let i = 0; i < 3; i++) {
-    $healthBar.append('<img src="/images/life.png" alt="A Heart">');
-  }
 }
 
 // Miscellaneous Options
@@ -490,11 +481,10 @@ function updatePlayerDisplay() {
 }
 function checkForWin() {
   if (player.location === door.location) {
-    if (level === 2) {
+    if (level === 3) {
       revealMap();
       $('#scoremessage').text(`YOU WIN!!! \n It took you ${timeTaken/60} minutes and ${stepsTaken} steps to reach the end of the Maze. \n You killed ${enemiesKilled} enemies along the way`);
       $('.scoremessage').removeClass('hide');
-      // $('#score').html(stepsTaken);
       checkForHighscore();
       window.alert(`YOU WIN!!! \n It took you ${timeTaken/60} minutes and ${stepsTaken} steps to reach the end of the Maze. \n You killed ${enemiesKilled} enemies along the way`);
       setTimeout(reset,3000);
@@ -538,11 +528,25 @@ function levelUp() {
     spawnEnemies(3,1);
     spawnEnemies(2,2);
     spawnEnemies(1,3);
-    spawnItems();
+    spawnItems(1,2);
+    spawnItems(1,3);
     spawnItems();
     spawnItems();
     spawnStrongItems();
     displayManual(2);
+  }
+  if (level === 3) {
+    spawnEnemies(7,1);
+    spawnEnemies(5,2);
+    spawnEnemies(3,3);
+    spawnItems();
+    spawnItems();
+    spawnItems();
+    spawnItems();
+    spawnItems();
+    spawnItems();
+    spawnStrongItems();
+    spawnStrongItems();
   }
   changeVisibility();
   activateMovement();
@@ -550,7 +554,6 @@ function levelUp() {
 function loseGame() {
   if (player.health <= 0) {
     $('#scoremessage').removeClass('hide');
-    // $('#score').html(stepsTaken);
     checkForHighscore();
     window.alert('YOU DIED!');
     reset();
