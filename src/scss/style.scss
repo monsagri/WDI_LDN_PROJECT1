@@ -1,4 +1,4 @@
-darkred* {
+* {
   box-sizing: border-box;
   font-family: 'Press Start 2P', cursive;
 }
@@ -22,7 +22,6 @@ body {
   // text-align: center;
   header {
     h1 {
-      font-family: 'Press Start 2P', cursive;
       position:  absolute;
       top: 8vh;
       left: 20vw;
@@ -44,6 +43,7 @@ body {
       top: 40vh;
       left: calc(30vw / 2);
       button {
+        font-family: 'Press Start 2P', cursive;
         font-size: 1.5rem;
         line-height: 150%;
         font-weight: bold;
@@ -51,8 +51,6 @@ body {
         width: 12vw;
         border: 1px solid black;
         border-radius: 6vw;
-        // font-family: 'Oswald', sans-serif;
-        font-family: 'Press Start 2P', cursive;
         background-color: darkred;
         border: none;
         color: black;
@@ -100,9 +98,9 @@ body {
   background-size: cover;
 }
 
-.hidden {
-  opacity: 0;
-}
+// .hidden {
+//   opacity: 0;
+// }
 
 .hide {
   display: none;
@@ -122,7 +120,6 @@ h2 {
   flex-direction: row;
   justify-content: space-between;
   .gameboard {
-    // margin-top: 30px;
     background-color: #000;
     border: 2px solid darkred;
     width: 77vw;
@@ -133,7 +130,6 @@ h2 {
       padding: 30px;
       text-align: center;
       font-size: 2rem;
-      font-family: 'Press Start 2P', cursive;
       font-weight: 500;
       color: red;
     }
@@ -145,7 +141,6 @@ h2 {
     background-color: black;
     border: 2px solid darkred;
     text-align: center;
-    font-family: 'Press Start 2P', cursive;
     font-size: 0.7rem;
     color: red;
     display: flex;
@@ -173,3 +168,32 @@ h2 {
     }
   }
 }
+// // .wrapper {
+//   margin: 30px auto;
+//   font-size: 2rem;
+//   color: red;
+//   h2 {
+//     font-size: 3rem;
+//     font-family: 'Oswald', sans-serif;
+//     text-align: center;
+//     margin-bottom: 20px;
+//   }
+//   table {
+//     tr {
+//       td {
+//         margin-bottom: 10px;
+//         padding: 0 40px;
+//         font-family: 'Oswald', sans-serif;
+//         text-align: center;
+//         font-size: 1.75rem;
+//       }
+//       th {
+//         padding: 0 40px;
+//         font-family: 'Oswald', sans-serif;
+//         text-align: center;
+//         color: red;
+//         text-decoration: underline;
+//       }
+//     }
+//   }
+// }
