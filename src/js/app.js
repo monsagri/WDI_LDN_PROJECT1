@@ -37,6 +37,12 @@ let enemyLocations = [];
 let items = [];
 let itemLocations = [];
 let visibleSquares = [];
+const moveKeys = {
+  87: - boardHeight,
+  83: + boardHeight,
+  65: - 1,
+  68: + 1
+};
 
 
 // Declare global functions
@@ -124,8 +130,7 @@ class Character {
     }
   }
   move(key) {
-    // check if key is a movekey
-    if (!(key in this.moveKeys)) return;
+
 
     // checking if move hits a wall
     if (walls[level].includes(this.location + this.moveKeys[key])) return console.log('That is not a legal move.');
@@ -189,8 +194,6 @@ class Character {
     // adding image to new location
     $(`[data-location="${this.location}"]`).html(`<img src=${this.imageSrc}>`);
     changeVisibility();
-    stepsTaken ++;
-    $stepDisplay.text(stepsTaken);
     checkForWin();
     // Do calculations for next itemLocations
     this.nextLocationUp = this.location + this.moveKeys[87];
@@ -237,9 +240,24 @@ function deactivateMovement() {
   $('body').off('keydown');
 }
 function passKey(e) {
+  // check if key is a movekey
+  if (!(e.keyCode in moveKeys)) return;
   player.move(e.keyCode);
+  stepsTaken ++;
+  $stepDisplay.text(stepsTaken);
 }
-
+// passes an enemy a random move order
+function moveEnemies() {
+  const possibleMoves = [87,83,65,63];
+  const randomMoveKey = Math.floor(Math.random() * 4);
+  enemies.forEach(enemy => {
+    enemy.move(possibleMoves[randomMoveKey]);
+  });
+}
+//  Goblin Movement starter
+function startEnemyMovement() {
+  setInterval(moveEnemies, 1000);
+}
 // Functions related to Visibility
 function changeVisibility() {
   visibleSquares = [];
@@ -514,6 +532,9 @@ function levelUp() {
   // Update Player moveKeys
   player.moveKeys[87] = - boardHeight;
   player.moveKeys[83] = + boardHeight;
+  // update global moveKeys
+  moveKeys[87] = - boardHeight;
+  moveKeys[83] = + boardHeight;
   // Spawn door
   spawnDoor();
   //spawn Enemies - move this to object library
