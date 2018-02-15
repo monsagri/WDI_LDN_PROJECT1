@@ -165,20 +165,21 @@ class Character {
       // Update player stats according to Item keys and values
       Object.keys(player).forEach(key => {
         if (Object.keys(itemFound).includes(key) && !['location', 'imageSrc', 'name'].includes(key)) {
+          console.log(`Updating ${key} from ${player[key]} by ${itemFound[key]}`);
+          // if item is a weapon or armor, set value back to initial value to prevent stacking items
+          if (key === 'damage'){
+            player[key] = 1;
+          }
+          if (key === 'armor'){
+            player[key] = 0;
+          }
+          // Update Value
           player[key] += itemFound[key];
-          // If Item is a weapon add its damage to player damage display
-          for (let i = 0; i < itemFound.damage; i++){
-            console.log('adding ' + itemFound.damage +  ' damage for ' + itemFound.name);
-            $('#damage').append(`<img src="/images/fist.png" alt=${itemFound['name']}>`);
-          }
-          // If Item is armor add its value to player armor display
-          for (let i = 0; i < itemFound.armor; i++){
-            $('#armor').append(`<img src="/images/leather_armor.png" alt=${itemFound['name']}>`);
-          }
-          // Add item to backpack
-          $('#backpack').append(`<img src=${itemFound['imageSrc']} alt=${itemFound['name']}>`);
         }
       });
+      // Add item to backpack
+      $('#backpack').append(`<img src=${itemFound['imageSrc']} alt=${itemFound['name']}>`);
+      updatePlayerDisplay();
     }
     // removing image from old Location
     $(`[data-location="${this.location}"]`).html('');
@@ -408,19 +409,24 @@ function startGameTimer() {
   setInterval(countGameTime, 1000);
 }
 function displayManual(level) {
+  console.log('rtfm');
   $($board.children()).hide();
   $board.append(`<p>${instructions[level]}<p>`);
-  setTimeout(hideInstructions, 5000);
-  setTimeout(showGame, 5000);
+  setTimeout(hideInstructions, 7000);
+  setTimeout(showGame, 7000);
   setTimeout(function() {
     $board.find('p').remove();
-  }, 5000);
+  }, 7000);
 }
 function showGame() {
   $board.find('div').show(2000);
 }
 function hideInstructions() {
   $board.find('p').hide(2000);
+}
+function revealMap() {
+  console.log('look at all these things you missed');
+  $('.area').removeClass('hidden');
 }
 
 // Map Editor Mode
@@ -448,17 +454,39 @@ function saveMap() {
 }
 
 // Administrative Functions
+function updatePlayerDisplay() {
+  // add lives
+  $('#healthbar img').remove();
+  for (let i = 0; i < (player.health); i++){
+    $('#healthbar').append('<img src="/images/life.png" alt="A Heart">');
+  }
+  // add Damage
+  $('#damage img').remove();
+  for (let i = 0; i < (player.damage); i++){
+    $('#damage').append('<img src="/images/fist.png" alt="A Fist">');
+  }
+  // add armor
+  $('#armor img').remove();
+  for (let i = 0; i < (player.armor); i++){
+    $armor.append('<img src="/images/leather_armor.png" alt="Armor">');
+  }
+}
 function checkForWin() {
   if (player.location === door.location) {
     if (level === 2) {
+      revealMap();
       $('#scoremessage').removeClass('hide');
       $('#score').html(stepsTaken);
       checkForHighscore();
-      window.alert(`YOU WIN!!! \n It took you ${timeTaken/60} minutes and ${stepsTaken} to reach the end of the Maze. \n You killed ${enemiesKilled} enemies along the way` );
-      reset();
+      window.alert(`YOU WIN!!! \n It took you ${timeTaken/60} minutes and ${stepsTaken} steps to reach the end of the Maze. \n You killed ${enemiesKilled} enemies along the way` );
+      setTimeout(reset,3000);
       setTimeout(deactivateMovement, 200);
     } else {
-      levelUp();
+      console.log('triggering reveal');
+      revealMap();
+      deactivateMovement();
+      console.log('running levelup after 3 seconds');
+      setTimeout(levelUp, 3000);
     }
   }
 }
@@ -498,6 +526,7 @@ function levelUp() {
     displayManual(2);
   }
   changeVisibility();
+  activateMovement();
 }
 function loseGame() {
   if (player.health <= 0) {
