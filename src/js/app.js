@@ -111,10 +111,17 @@ class Enemy {
     }
     // Check if NPC Died
     if (this.health <= 0) {
-      // remove the enemy from the map and enemyLocations
       console.log('You killed a ' + this.type);
+      // remove the enemy from enemyLocations
       const index = enemyLocations.indexOf(this.location);
       enemyLocations.splice(index, 1);
+      // remove the enemy from enemies array
+      console.log('Enemies array is currently ' + enemies);
+      console.log('removing ' + this + 'from enemies array');
+      const index1 = enemies.indexOf(this);
+      console.log('the index of this object is' + index1);
+      enemies.splice(index1, 1);
+      console.log('Enemies array is now ' + enemies);
       // move player to enemy location
       $(`[data-location="${player.location}"]`).html('');
       player.location = this.location;
@@ -292,7 +299,7 @@ function moveEnemies() {
 }
 //  Goblin Movement starter
 function startEnemyMovement() {
-  setInterval(moveEnemies, 1000);
+  setInterval(moveEnemies, 2000);
 }
 // Functions related to Visibility
 function changeVisibility() {
@@ -591,6 +598,7 @@ function levelUp() {
     spawnItems();
     spawnStrongItems();
     displayManual(2);
+    startEnemyMovement();
   }
   if (level === 3) {
     spawnEnemies(7,1);
@@ -604,6 +612,7 @@ function levelUp() {
     spawnItems();
     spawnStrongItems();
     spawnStrongItems();
+    startEnemyMovement();
   }
   changeVisibility();
   activateMovement();
