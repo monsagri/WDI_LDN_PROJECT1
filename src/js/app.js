@@ -1,10 +1,11 @@
-/* global walls itemDefinitions characterDefinitions mapDimensions instructions strongItemDefinitions*/
+/* global walls itemDefinitions characterDefinitions mapDimensions instructions strongItemDefinitions mainInstructions*/
 console.log('JS locked and loaded');
 // Declare global variables
 
 // Dom Variables
 let $board = null;
 let $newGame = null;
+let $instructionsButton = null;
 let $soundButton = null;
 let $healthBar = null;
 let $healthBarNpc = null;
@@ -30,6 +31,7 @@ let boardSize = 0;
 let boardHeight = 0;
 
 // Gameplay Variables
+let displayInstructions = false;
 let player = null;
 let door = null;
 let enemies = [];
@@ -56,6 +58,7 @@ function init(){
   // grab DOM-related variables
   $board = $('.gameboard');
   $newGame = $('#newgame');
+  $instructionsButton = $('#instructions');
   $soundButton = $('#sound');
   music = document.querySelector('#backgroundmusic');
   eventSound = document.querySelector('#eventsound');
@@ -70,10 +73,11 @@ function init(){
   $armorNpc = $('#armornpc');
   $backpack = $('#backpack');
   // run Functions
-
+  $board.append(mainInstructions);
   // add Event listeners
   $newGame.on('click', newGame);
   $soundButton.on('click', toggleMusic);
+  $instructionsButton.on('click', toggleInstructions);
   $('#mapmaker').on('click', activateMapEditor);
   $('#savemap').on('click', saveMap);
 }
@@ -485,11 +489,11 @@ function displayManual(level) {
   console.log('rtfm');
   $($board.children()).hide();
   $board.append(`<p>${instructions[level]}<p>`);
-  setTimeout(hideInstructions, 7000);
-  setTimeout(showGame, 7000);
+  setTimeout(hideInstructions, 10000);
+  setTimeout(showGame, 10000);
   setTimeout(function() {
     $board.find('p').remove();
-  }, 7000);
+  }, 10000);
 }
 function showGame() {
   $board.find('div').show(2000);
@@ -602,7 +606,7 @@ function levelUp() {
     spawnItems();
     spawnStrongItems();
     displayManual(2);
-    setTimeout(startEnemyMovement(),8000);
+    setTimeout(startEnemyMovement(),10000);
   }
   if (level === 3) {
     spawnEnemies(7,1);
@@ -616,7 +620,7 @@ function levelUp() {
     spawnItems();
     spawnStrongItems();
     spawnStrongItems();
-    setTimeout(startEnemyMovement(),8000)
+    setTimeout(startEnemyMovement(),10000);
   }
   changeVisibility();
   activateMovement();
@@ -657,4 +661,15 @@ function reset() {
   $healthBar.html('');
   $healthBarNpc.html('');
   $backpack.html('');
+}
+function toggleInstructions() {
+  if (!displayInstructions) {
+    $board.children().hide();
+    $board.append(mainInstructions);
+    displayInstructions = !displayInstructions;
+  } else {
+    $('.instructions').remove();
+    $board.children().show();
+    displayInstructions = !displayInstructions;
+  }
 }
