@@ -17,6 +17,7 @@ let $backpack = null;
 let $timerDisplay = null;
 let $stepDisplay = null;
 let $enemiesKilledDisplay = null;
+let $log = null;
 let music = null;
 let eventSound = null;
 
@@ -72,6 +73,7 @@ function init(){
   $armor = $('#armor');
   $armorNpc = $('#armornpc');
   $backpack = $('#backpack');
+  $log = $('.log');
   // run Functions
   $board.append(mainInstructions);
   // add Event listeners
@@ -97,7 +99,7 @@ class Enemy {
   attack() {
     // NPC attacks
     combatSound();
-    console.log(this.type + ' hits you for ' + (this.damage - player['armor']) + ' damage.');
+    addToLog(`The nasty ${this.type} hits you for ${(this.damage - player['armor'])} damage.`);
     // Apply Player Damage
     player['health'] -= (this.damage - player['armor']);
     // Remove appropiate number of hearts from display
@@ -110,12 +112,12 @@ class Enemy {
       loseGame();
     // Player Attacks
     } else {
-      console.log(`You hit ${this.type} for ${player['damage']} damage!`);
+      addToLog(`You hit ${this.type} for ${player['damage']-this.armor} damage!`);
       this.health -= (player['damage'] - this.armor);
     }
     // Check if NPC Died
     if (this.health <= 0) {
-      console.log('You killed a ' + this.type);
+      addToLog(`You killed a ${this.type}`);
       // remove the enemy from enemyLocations
       const index = enemyLocations.indexOf(this.location);
       enemyLocations.splice(index, 1);
@@ -132,17 +134,17 @@ class Enemy {
   }
   move(key) {
     // checking if move hits a wall
-    if (walls[level].includes(this.location + this.moveKeys[key])) return console.log('That is not a legal move.');
+    if (walls[level].includes(this.location + this.moveKeys[key])) return;
 
     // check if move hits the boundary
-    if (key === 87 && (this.nextLocationUp) < 0)  return console.log('That is not a legal move.');
+    if (key === 87 && (this.nextLocationUp) < 0)  return;
     if (key === 83) {
-      if (this.location === (boardSize - boardHeight) || (this.location + boardHeight) > boardSize) return console.log('That is not a legal move.');
+      if (this.location === (boardSize - boardHeight) || (this.location + boardHeight) > boardSize) return;
     }
     if (key === 65) {
-      if (this.location === 0 || this.location % boardHeight === 0) return console.log('That is not a legal move.');
+      if (this.location === 0 || this.location % boardHeight === 0) return;
     }
-    if (key === 68 && this.location % boardHeight === boardHeight - 1) return console.log('That is not a legal move.');
+    if (key === 68 && this.location % boardHeight === boardHeight - 1) return;
     // Check for combat
     if (player.location === (this.location + this.moveKeys[key])){
       this.updateDisplay();
@@ -236,7 +238,7 @@ class Character {
       const index = itemLocations.indexOf(itemFound.location);
       itemLocations.splice(index, 1);
       // Add item to player backpack
-      console.log('You found a ' + itemFound.name);
+      addToLog(`You found a ${itemFound.name}, check your Display to see it's effect.`);
       player.items.push(itemFound);
       // Update player stats according to Item keys and values
       Object.keys(player).forEach(key => {
@@ -367,7 +369,7 @@ function minimumDistance(item,min) {
 function newGame() {
   // scroll to the gameboard
   $('html, body').animate({
-    scrollTop: $board.offset().top - 30
+    scrollTop: $board.offset().top
   }, 2000);
 
   reset();
@@ -559,6 +561,7 @@ function checkForWin() {
       setTimeout(reset,3000);
       setTimeout(deactivateMovement, 200);
     } else {
+      addToLog('You found the door to the next level! Congratulations');
       console.log('triggering reveal');
       revealMap();
       deactivateMovement();
@@ -672,4 +675,10 @@ function toggleInstructions() {
     $board.children().show();
     displayInstructions = !displayInstructions;
   }
+}
+function addToLog(test) {
+  if ($log.children().length >= 5) {
+    $('.log p:last-child').remove();
+  }
+  $log.prepend(`<p>${test}</p>`);
 }

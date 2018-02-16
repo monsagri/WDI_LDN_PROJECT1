@@ -178,9 +178,15 @@ h2 {
   }
 }
 .log {
-  align-self: auto;
-  margin: 5px auto;
+  margin: -30px auto;
   width: 77vw;
-  height: 10vh;
+  height: 20vh;
   border: 1px solid red;
+  p {
+    font-family: 'Oswald', sans-serif;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 400;
+    color: darkred;
+  }
 }

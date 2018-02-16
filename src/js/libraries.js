@@ -47,7 +47,7 @@ const characterDefinitions = [
 ];
 const itemDefinitions = [
   {
-    name: 'door',
+    name: 'the door',
     imageSrc: '/images/door1.png'
   },
   {
@@ -58,12 +58,13 @@ const itemDefinitions = [
   },
   {
     type: 'armor',
-    name: 'leather',
+    name: 'leather armor',
     armor: 1,
     imageSrc: '/images/leather_armor.png'
   },
   {
-    name: 'potion',
+    type: 'items',
+    name: 'health potion',
     health: 1,
     imageSrc: '/images/health1.png'
   },
@@ -78,7 +79,7 @@ const itemDefinitions = [
 const strongItemDefinitions = [
   {
     type: 'armor',
-    name: 'plate',
+    name: 'plate armor',
     armor: 2,
     imageSrc: '/images/plate_armor.png'
   },
