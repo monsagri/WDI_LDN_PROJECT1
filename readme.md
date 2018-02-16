@@ -30,27 +30,27 @@ For our first project, we were given four days to design and build an in-browser
 
 <p align="center"><img src="https://i.imgur.com/QX0LJiQ.jpg" width="700"></p>
 
-###### Level one serves as an introduction to the basic game concept. The player explores a small map which contains one item and the door to the next level. As with all levels, once the player reaches the door, the map is revealed to show what was potentially missed.
+ Level one serves as an introduction to the basic game concept. The player explores a small map which contains one item and the door to the next level. As with all levels, once the player reaches the door, the map is revealed to show what was potentially missed.
 
 <p align="center"><img src="https://i.imgur.com/hSgXi72.png" width="700"></p>
 
-###### Level two adds enemies to the map, as well as more items. This gives the player a first experience of combat within the game. The map size is increased as well.
+ Level two adds enemies to the map, as well as more items. This gives the player a first experience of combat within the game. The map size is increased as well.
 
 <p align="center"><img src="https://i.imgur.com/Ydcw1zZ.png" width="700"></p>
 
-###### In level 3 the enemies move function is activated and the player is confronted with new enemy types, as well as the risk of being caught out by moving enemies.
+ In level 3 the enemies move function is activated and the player is confronted with new enemy types, as well as the risk of being caught out by moving enemies.
 
 <p align="center"><img src="https://i.imgur.com/nZs7bGI.png" width="700"></p>
 
-###### Level four is the final level. No new features are introduced at this point, it is simply a larger level to push the player to their limits.
+ Level four is the final level. No new features are introduced at this point, it is simply a larger level to push the player to their limits.
 
 ---
 
-###### The Win Logic requires the player to reach the final door without being reduced to 0 hitpoints on the way.
+ The Win Logic requires the player to reach the final door without being reduced to 0 hitpoints on the way.
 
-###### The players score is calculated using a formula that takes into account the time taken, steps taken, enemies killed and coins collected.
+ The players score is calculated using a formula that takes into account the time taken, steps taken, enemies killed and coins collected.
 
-###### Once the final level is beaten, the player is presented with their final score and can restart the entire game and try to beat it. The highscore is displayed above the game board.
+ Once the final level is beaten, the player is presented with their final score and can restart the entire game and try to beat it. The highscore is displayed above the game board.
 
 ---
 # Planned Features
@@ -63,6 +63,7 @@ For our first project, we were given four days to design and build an in-browser
 
 ---
 # In Review
+
 I am very pleased with the final product. While there are several small design changes I would like to make, I believe that I captured the feeling of Roguelike games quite well.
 
 The game framework is robust and adding new item or enemy definitions is simply a matter of updating the definition list in the libraries.js file.
