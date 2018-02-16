@@ -113,7 +113,7 @@ h2 {
 }
 .game {
   position: absolute;
-  top: 85vh;
+  top: 80vh;
   left: 3.1vw;
   // border: 2px solid white;
   display: flex;
@@ -124,7 +124,7 @@ h2 {
     background-color: #000;
     border: 2px solid darkred;
     width: 77vw;
-    height: 90vh;
+    height: 85vh;
     display: flex;
     flex-wrap: wrap;
     p {
@@ -138,7 +138,7 @@ h2 {
       font-family: 'Oswald', sans-serif;
       padding: 10px;
       text-align: center;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 400;
       color: darkred;
     }
@@ -178,14 +178,14 @@ h2 {
   }
 }
 .log {
-  margin: -30px auto;
+  margin: -9vh auto;
   width: 77vw;
-  height: 20vh;
+  height: 15vh;
   border: 1px solid red;
   p {
     font-family: 'Oswald', sans-serif;
     text-align: center;
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: 400;
     color: darkred;
   }

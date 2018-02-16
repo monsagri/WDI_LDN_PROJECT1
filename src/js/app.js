@@ -369,7 +369,7 @@ function minimumDistance(item,min) {
 function newGame() {
   // scroll to the gameboard
   $('html, body').animate({
-    scrollTop: $board.offset().top
+    scrollTop: $board.offset().top - 5
   }, 2000);
 
   reset();
