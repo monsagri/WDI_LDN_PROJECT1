@@ -26,6 +26,8 @@ let level = 0;
 let stepsTaken = 0;
 let enemiesKilled = 0;
 let timeTaken = 0;
+let coinsFound = 0;
+let score = 0;
 
 // Map Variables
 let boardSize = 0;
@@ -112,7 +114,7 @@ class Enemy {
       loseGame();
     // Player Attacks
     } else {
-      addToLog(`You hit ${this.type} for ${player['damage']-this.armor} damage!`);
+      addToLog(`You hit the ${this.type} for ${player['damage']-this.armor} damage!`);
       this.health -= (player['damage'] - this.armor);
     }
     // Check if NPC Died
@@ -251,12 +253,16 @@ class Character {
           if (key === 'armor'){
             player[key] = 0;
           }
+          if (itemFound.name === 'coin') {
+            coinsFound ++;
+          }
           // Update Value
           player[key] += itemFound[key];
         }
       });
       // Add item to backpack
       $('#backpack').append(`<img src=${itemFound['imageSrc']} alt=${itemFound['name']}>`);
+      itemSound();
       updatePlayerDisplay();
     }
     // removing image from old Location
@@ -480,6 +486,16 @@ function combatSound() {
     console.log('eventSound playing');
   }
 }
+function itemSound() {
+  eventSound.src = '/sounds/item.wav';
+  if (eventSound.paused === false) {
+    eventSound.pause();
+    console.log('eventSound paused');
+  } else {
+    eventSound.play();
+    console.log('eventSound playing');
+  }
+}
 function countGameTime() {
   timeTaken ++;
   $timerDisplay.text(timeTaken);
@@ -556,6 +572,7 @@ function checkForWin() {
       revealMap();
       $('#scoremessage').text(`YOU WIN!!! \n It took you ${timeTaken/60} minutes and ${stepsTaken} steps to reach the end of the Maze. \n You killed ${enemiesKilled} enemies along the way`);
       $('.scoremessage').removeClass('hide');
+      calculateScore();
       checkForHighscore();
       window.alert(`YOU WIN!!! \n It took you ${timeTaken/60} minutes and ${stepsTaken} steps to reach the end of the Maze. \n You killed ${enemiesKilled} enemies along the way`);
       setTimeout(reset,3000);
@@ -632,14 +649,18 @@ function levelUp() {
 function loseGame() {
   if (player.health <= 0) {
     $('#scoremessage').removeClass('hide');
+    calculateScore();
     checkForHighscore();
     window.alert('YOU DIED!');
     reset();
     setTimeout(deactivateMovement, 200);
   }
 }
+function calculateScore() {
+  score = 100 - ((timeTaken / 60).toFixed(1) * 10) - ((stepsTaken / 10).toFixed(0)) + enemiesKilled * 20 + coinsFound * 10 + level * 10;
+}
 function checkForHighscore() {
-  if ($('#highscore').html() === '-' || stepsTaken < $('#highscore').html()) $('#highscore').html(stepsTaken);
+  if ($('#highscore').html() === '-' || score > $('#highscore').html()) $('#highscore').html(score);
 }
 function reset() {
   $('#scoremessage').addClass('hide');
